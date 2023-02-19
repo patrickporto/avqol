@@ -1,0 +1,15 @@
+{
+    "name": "vdoninjaembedded",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "build": "vite build",
+        "build:watch": "vite build --watch"
+    },
+    "devDependencies": {
+        "@league-of-foundry-developers/foundry-vtt-types": "git://github.com/League-of-Foundry-Developers/foundry-vtt-types.git#main",
+        "tslib": "^2.5.0",
+        "typescript": "^4.9.5",
+        "vite": "^4.1.2"
+    }
+}

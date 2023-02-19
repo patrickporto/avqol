@@ -1,0 +1,21 @@
+{
+    "id": "vdoninjaembedded",
+    "version": "1.0.0",
+    "compatibility": {
+        "minimum": "10",
+        "verified": "10",
+        "maximum": "10"
+    },
+    "title": "VDO.Ninja Embedded",
+    "description": "A Foundry Module for embed vdo.ninja",
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "lang/en.json"
+        }
+    ],
+    "esmodules": [
+        "vdoninjaembedded.mjs"
+    ]
+}
