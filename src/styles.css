@@ -2,6 +2,10 @@
     padding: 5px;
 }
 
+.avqol-form section {
+    flex: 0;
+}
+
 .avqol-permissions__permission {
     margin-bottom: 0.5em;
     padding: 6px 8px;
@@ -13,11 +17,6 @@
     text-shadow: 1px 1px black;
     display: flex;
     justify-content: space-between;
-}
-
-.avqol-permissions__permission--granted {
-    background: rgba(47, 80, 132, 0.8);
-    border: 1px solid var(--color-level-info);
 }
 
 .avqol-permissions__permission--prompt {

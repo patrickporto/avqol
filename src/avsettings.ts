@@ -7,7 +7,7 @@ import {
     setRTCClientSettings,
 } from "./rtcsettings";
 
-const DEFAULT_AVATAR = 'icons/svg/mystery-man.svg'
+const DEFAULT_AVATAR = "icons/svg/mystery-man.svg";
 
 export class AVQOLSettings extends FormApplication {
     static get defaultOptions() {
@@ -17,6 +17,8 @@ export class AVQOLSettings extends FormApplication {
             template: `${TEMPLATE_PATH}/avqolsettings.hbs`,
             id: "av-qol-settings",
             title: (game as Game).i18n.localize("AVQOL.SettingsTitle"),
+            width: 600,
+            height: 550,
         });
     }
 
@@ -154,12 +156,14 @@ export class AVQOLSettings extends FormApplication {
         });
         cameraStatus.addEventListener("change", async () => {
             this.render(true);
-            await this.renderPreview(html);
+            await this.renderVideoPreview(html);
         });
-        $(html).find("#videoSrc").on("change", async ({ target }) => {
-            await this.renderPreview(html);
-        })
-        await this.renderPreview(html);
+        $(html)
+            .find("#videoSrc")
+            .on("change", async ({ target }) => {
+                await this.renderVideoPreview(html);
+            });
+        await this.renderVideoPreview(html);
     }
 
     private async checkPermissions() {
@@ -194,21 +198,39 @@ export class AVQOLSettings extends FormApplication {
         this.render(true);
     }
 
-    async renderPreview(html: JQuery<HTMLElement>) {
+    async renderVideoPreview(html: JQuery<HTMLElement>) {
         const data = await this.getData();
         if (!data.videoDep) return;
         const deviceId = $(html).find("#videoSrc").val() as string;
-        if (deviceId === "disabled" || !deviceId) {
-            return
-        }
+        const devices = await this.getVideoDevides();
         debug("Rendering preview", deviceId);
         const preview = html.find(
             ".avqol-video-preview__video"
         )[0] as HTMLVideoElement;
+        const avatar = $(html).find(".avqol-video-preview__avatar");
+        if (deviceId === "disabled") {
+            preview.srcObject = null;
+            avatar.show();
+            return;
+        }
+        if (devices.includes(deviceId)) {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { deviceId: { exact: deviceId } },
+            });
+            preview.srcObject = stream;
+            avatar.hide();
+            return;
+        }
         const stream = await navigator.mediaDevices.getUserMedia({
-            video: { deviceId: { exact: deviceId } },
+            video: true,
         });
         preview.srcObject = stream;
-        $(html).find(".avqol-video-preview__avatar").hide()
+        avatar.hide();
+    }
+
+    private async getVideoDevides() {
+        return (await navigator.mediaDevices.enumerateDevices())
+            .filter((device) => device.kind === "videoinput")
+            .map((device) => device.deviceId);
     }
 }

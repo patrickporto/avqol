@@ -1,38 +1,4 @@
-<form class="flexcol">
-    <div class="avqol-permissions">
-        {{#if videoDep}}
-        <p class="avqol-permissions__permission avqol-permissions__permission--{{cameraStatus}}">
-            <strong><i class="fa-solid fa-camera"></i> {{localize 'AVQOL.PermissionVideo'}}</strong>
-            <span class="avqol-permissions__permission-status">
-                {{#if (eq cameraStatus 'granted')}}
-                <i class="fa-solid fa-check"></i> {{localize 'AVQOL.PermissionGranted'}}
-                {{/if}}
-                {{#if (eq cameraStatus 'prompt')}}
-                <i class="fa-solid fa-question"></i> {{localize 'AVQOL.PermissionPrompt'}}
-                {{/if}}
-                {{#if (eq cameraStatus 'denied')}}
-                <i class="fa-solid fa-xmark"></i> {{localize 'AVQOL.PermissionDenied'}}
-                {{/if}}
-            </span>
-        </p>
-        {{/if}}
-        {{#if audioDep}}
-        <p class="avqol-permissions__permission avqol-permissions__permission--{{microphoneStatus}}">
-            <strong><i class="fa-solid fa-microphone"></i> {{localize 'AVQOL.PermissionAudio'}}</strong>
-            <span class="avqol-permissions__permission-status">
-                {{#if (eq microphoneStatus 'granted')}}
-                <i class="fa-solid fa-check"></i> {{localize 'AVQOL.PermissionGranted'}}
-                {{/if}}
-                {{#if (eq microphoneStatus 'prompt')}}
-                <i class="fa-solid fa-question"></i> {{localize 'AVQOL.PermissionPrompt'}}
-                {{/if}}
-                {{#if (eq microphoneStatus 'denied')}}
-                <i class="fa-solid fa-xmark"></i> {{localize 'AVQOL.PermissionDenied'}}
-                {{/if}}
-            </span>
-        </p>
-        {{/if}}
-    </div>
+<form class="flexcol avqol-form">
     <section>
         <div class="avqol-video-preview">
             <div class="avqol-video-preview__container">
@@ -41,9 +7,10 @@
             </div>
         </div>
     </section>
+    {{#if videoDep}}
     <section>
-        <h2>{{localize 'WEBRTC.DevicesTab'}}</h2>
-        {{#if videoDep}}
+        <h2>{{localize 'AVQOL.VideoSettings'}}</h2>
+        {{#if (eq cameraStatus 'granted')}}
         <div class="form-group">
             <label for="videoSrc">{{localize 'WEBRTC.VideoDevice'}}</label>
             <select name="videoSrc" id="videoSrc">
@@ -51,8 +18,28 @@
             </select>
             <p class="notes">{{localize 'WEBRTC.VideoDeviceNotes'}}</p>
         </div>
+        {{else}}
+
+        <div class="avqol-permissions">
+            <p class="avqol-permissions__permission avqol-permissions__permission--{{cameraStatus}}">
+                <strong><i class="fa-solid fa-camera"></i> {{localize 'AVQOL.PermissionVideo'}}</strong>
+                <span class="avqol-permissions__permission-status">
+                    {{#if (eq cameraStatus 'prompt')}}
+                    <i class="fa-solid fa-question"></i> {{localize 'AVQOL.PermissionPrompt'}}
+                    {{/if}}
+                    {{#if (eq cameraStatus 'denied')}}
+                    <i class="fa-solid fa-xmark"></i> {{localize 'AVQOL.PermissionDenied'}}
+                    {{/if}}
+                </span>
+            </p>
+        </div>
         {{/if}}
-        {{#if audioDep}}
+    </section>
+    {{/if}}
+    {{#if audioDep}}
+    <section>
+        <h2>{{localize 'AVQOL.AudioSettings'}}</h2>
+        {{#if (eq microphoneStatus 'granted')}}
         <div class="form-group">
             <label for="audioSrc">{{localize 'WEBRTC.AudioDevice'}}</label>
             <select name="audioSrc" id="audioSrc">
@@ -67,11 +54,6 @@
             </select>
             <p class="notes">{{localize 'WEBRTC.AudioOutputNotes'}}</p>
         </div>
-        {{/if}}
-    </section>
-    {{#if audioDep}}
-    <section>
-        <h2>{{localize 'AVQOL.AudioSettings'}}</h2>
         <div class="form-group">
             <label for="voiceMode">{{localize 'WEBRTC.VoiceMode'}}</label>
             <select name="voiceMode" id="voiceMode">
@@ -79,9 +61,24 @@
             </select>
             <p class="notes">{{localize 'WEBRTC.VoiceModeNotes'}}</p>
         </div>
+        {{else}}
+        <div class="avqol-permissions">
+            <p class="avqol-permissions__permission avqol-permissions__permission--{{microphoneStatus}}">
+                <strong><i class="fa-solid fa-microphone"></i> {{localize 'AVQOL.PermissionAudio'}}</strong>
+                <span class="avqol-permissions__permission-status">
+                    {{#if (eq microphoneStatus 'prompt')}}
+                    <i class="fa-solid fa-question"></i> {{localize 'AVQOL.PermissionPrompt'}}
+                    {{/if}}
+                    {{#if (eq microphoneStatus 'denied')}}
+                    <i class="fa-solid fa-xmark"></i> {{localize 'AVQOL.PermissionDenied'}}
+                    {{/if}}
+                </span>
+            </p>
+        </div>
+        {{/if}}
     </section>
     {{/if}}
-    <footer class="sheet-footer flexrow">
+    <footer class="avqol-form-footer">
         <button type="submit" name="submit">
             <i class="fa fa-check"></i> OK
         </button>
