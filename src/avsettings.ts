@@ -20,7 +20,7 @@ export class AVQOLSettings extends FormApplication {
             id: "av-qol-settings",
             title: (game as Game).i18n.localize("AVQOL.SettingsTitle"),
             width: 600,
-            height: 550,
+            height: 570,
         });
     }
 

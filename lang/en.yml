@@ -6,4 +6,6 @@ AVQOL.PermissionDenied: Denied
 AVQOL.PermissionPrompt: Prompt
 AVQOL.VideoSettings: Video Settings
 AVQOL.AudioSettings: Audio Settings
-
+AVQOL.MenuConfigutation: Audio/Video Configuration
+AVQOL.MenuConfigutationHint: Configure settings to the integrated A/V with quality of life
+AVQOL.MenuConfigutationLabel: Configure Audio/Video

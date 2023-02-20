@@ -1,4 +1,5 @@
-import { AVQOLSettings } from "./avsettings";
+import { getAVQOLAPI, registerAVQOLAPI } from "./avqol";
+import { CANONICAL_NAME } from "./constants";
 import { debug } from "./debug";
 import registerSettings from "./module-settings";
 import { getRTCWorldSettings } from "./rtcsettings";
@@ -6,7 +7,8 @@ import './styles.css'
 
 Hooks.on("init", function(...rest) {
     registerSettings();
-    debug("This code runs once the Foundry VTT software begins its initialization workflow.", rest);
+    debug('initializing AVQOL');
+    registerAVQOLAPI();
 });
 
 Hooks.on("ready", function() {
@@ -16,5 +18,5 @@ Hooks.on("ready", function() {
         return;
     }
     debug('AV mode is enabled, rendering AVQOL settings');
-    new AVQOLSettings('av-qol-settings').render(true);
+    getAVQOLAPI().openSettings();
 });
