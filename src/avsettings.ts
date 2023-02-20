@@ -3,9 +3,11 @@ import { debug } from "./debug";
 import {
     getRTCClientSettings,
     getRTCWorldSettings,
-    getRTFClient,
+    getRTCClient as getRTCClient,
     setRTCClientSettings,
 } from "./rtcsettings";
+
+const DEFAULT_AVATAR = 'icons/svg/mystery-man.svg'
 
 export class AVQOLSettings extends FormApplication {
     static get defaultOptions() {
@@ -31,18 +33,19 @@ export class AVQOLSettings extends FormApplication {
         debug("Camera permission", cameraStatus.state);
         const rtcWorldSettings = getRTCWorldSettings();
         return {
+            avatar: (game as Game).user?.avatar ?? DEFAULT_AVATAR,
             microphoneStatus: microphoneStatus.state,
             cameraStatus: cameraStatus.state,
             audioDep: [
                 AVSettings.AV_MODES.AUDIO,
                 AVSettings.AV_MODES.AUDIO_VIDEO,
-            // @ts-ignore
+                // @ts-ignore
             ].includes(rtcWorldSettings.mode),
             // @ts-ignore
             videoDep: [
                 AVSettings.AV_MODES.VIDEO,
                 AVSettings.AV_MODES.AUDIO_VIDEO,
-            // @ts-ignore
+                // @ts-ignore
             ].includes(rtcWorldSettings.mode),
             videoSrc: getRTCClientSettings().videoSrc,
             videoDevices: await this.getVideoSources(),
@@ -56,13 +59,19 @@ export class AVQOLSettings extends FormApplication {
     }
     getVoiceModes() {
         const voiceModes = {
-            [AVSettings.VOICE_MODES.ALWAYS]: (game as Game).i18n.localize("WEBRTC.VoiceModeAlways"),
-            [AVSettings.VOICE_MODES.ACTIVITY]: (game as Game).i18n.localize("WEBRTC.VoiceModeActivity"),
-            [AVSettings.VOICE_MODES.PTT]: (game as Game).i18n.localize("WEBRTC.VoiceModePtt"),
-        }
+            [AVSettings.VOICE_MODES.ALWAYS]: (game as Game).i18n.localize(
+                "WEBRTC.VoiceModeAlways"
+            ),
+            [AVSettings.VOICE_MODES.ACTIVITY]: (game as Game).i18n.localize(
+                "WEBRTC.VoiceModeActivity"
+            ),
+            [AVSettings.VOICE_MODES.PTT]: (game as Game).i18n.localize(
+                "WEBRTC.VoiceModePtt"
+            ),
+        };
         // @ts-ignore
         delete voiceModes[undefined];
-        return voiceModes
+        return voiceModes;
     }
     async getAudioOutputs() {
         const audioSink = getRTCClientSettings().audioSink;
@@ -83,7 +92,7 @@ export class AVQOLSettings extends FormApplication {
                 "WEBRTC.UnavailableDevice"
             );
         }
-        return {...sources, ...await getRTFClient().getAudioSinks()};
+        return { ...sources, ...(await getRTCClient().getAudioSinks()) };
     }
     async getAudioSources() {
         const audioSrc = getRTCClientSettings().audioSrc;
@@ -104,7 +113,7 @@ export class AVQOLSettings extends FormApplication {
                 "WEBRTC.UnavailableDevice"
             );
         }
-        return {...sources, ...await getRTFClient().getAudioSources()};
+        return { ...sources, ...(await getRTCClient().getAudioSources()) };
     }
     async getVideoSources() {
         const videoSrc = getRTCClientSettings().videoSrc;
@@ -125,7 +134,7 @@ export class AVQOLSettings extends FormApplication {
                 "WEBRTC.UnavailableDevice"
             );
         }
-        return {...sources, ...await getRTFClient().getVideoSources()};
+        return { ...sources, ...(await getRTCClient().getVideoSources()) };
     }
 
     async activateListeners(html: JQuery<HTMLElement>) {
@@ -143,9 +152,14 @@ export class AVQOLSettings extends FormApplication {
             // @ts-ignore
             name: "camera",
         });
-        cameraStatus.addEventListener("change", () => {
+        cameraStatus.addEventListener("change", async () => {
             this.render(true);
+            await this.renderPreview(html);
         });
+        $(html).find("#videoSrc").on("change", async ({ target }) => {
+            await this.renderPreview(html);
+        })
+        await this.renderPreview(html);
     }
 
     private async checkPermissions() {
@@ -178,5 +192,23 @@ export class AVQOLSettings extends FormApplication {
         };
         await navigator.mediaDevices.getUserMedia(constraints);
         this.render(true);
+    }
+
+    async renderPreview(html: JQuery<HTMLElement>) {
+        const data = await this.getData();
+        if (!data.videoDep) return;
+        const deviceId = $(html).find("#videoSrc").val() as string;
+        if (deviceId === "disabled" || !deviceId) {
+            return
+        }
+        debug("Rendering preview", deviceId);
+        const preview = html.find(
+            ".avqol-video-preview__video"
+        )[0] as HTMLVideoElement;
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { deviceId: { exact: deviceId } },
+        });
+        preview.srcObject = stream;
+        $(html).find(".avqol-video-preview__avatar").hide()
     }
 }

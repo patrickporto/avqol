@@ -22,7 +22,7 @@ export const getRTCClientSettings = () => {
 }
 
 
-export const getRTFClient = (): AVClient => {
+export const getRTCClient = (): AVClient => {
     // @ts-ignore
     return game.webrtc.client;
 }
