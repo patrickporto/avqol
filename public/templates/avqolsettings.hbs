@@ -41,6 +41,13 @@
         <h2>{{localize 'AVQOL.AudioSettings'}}</h2>
         {{#if (eq microphoneStatus 'granted')}}
         <div class="form-group">
+            <label for="voiceMode">{{localize 'WEBRTC.VoiceMode'}}</label>
+            <select name="voiceMode" id="voiceMode">
+                {{selectOptions voiceModes selected=voiceMode}}
+            </select>
+            <p class="notes">{{localize 'WEBRTC.VoiceModeNotes'}}</p>
+        </div>
+        <div class="form-group">
             <label for="audioSrc">{{localize 'WEBRTC.AudioDevice'}}</label>
             <select name="audioSrc" id="audioSrc">
                 {{selectOptions audioSourceDevices selected=audioSrc}}
@@ -65,13 +72,6 @@
                 {{selectOptions audioOutputDevices selected=audioSink}}
             </select>
             <p class="notes">{{localize 'WEBRTC.AudioOutputNotes'}}</p>
-        </div>
-        <div class="form-group">
-            <label for="voiceMode">{{localize 'WEBRTC.VoiceMode'}}</label>
-            <select name="voiceMode" id="voiceMode">
-                {{selectOptions voiceModes selected=voiceMode}}
-            </select>
-            <p class="notes">{{localize 'WEBRTC.VoiceModeNotes'}}</p>
         </div>
         {{else}}
         <div class="avqol-permissions">
