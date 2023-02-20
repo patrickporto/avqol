@@ -1,13 +1,13 @@
 {
-    "id": "vdoninjaembedded",
+    "id": "avqol",
     "version": "1.0.0",
     "compatibility": {
         "minimum": "10",
         "verified": "10",
         "maximum": "10"
     },
-    "title": "VDO.Ninja Embedded",
-    "description": "A Foundry Module for embed vdo.ninja",
+    "title": "A/V Quality of Life",
+    "description": "A Quality of Life for Foundry Audio/Video",
     "languages": [
         {
             "lang": "en",
@@ -16,6 +16,9 @@
         }
     ],
     "esmodules": [
-        "vdoninjaembedded.mjs"
+        "avqol.mjs"
+    ],
+    "styles": [
+        "avqol.css"
     ]
 }

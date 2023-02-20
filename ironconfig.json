@@ -1,7 +1,7 @@
 {
-    "distPath": "/home/patrickporto/foundry/modules/vdoninjaembedded/public",
+    "distPath": "/home/patrickporto/foundry/modules/avqol/public",
     "type": "module",
-    "canonicalName": "vdoninjaembedded",
-    "rootPath": "/home/patrickporto/foundry/modules/vdoninjaembedded",
+    "canonicalName": "avqol",
+    "rootPath": "/home/patrickporto/foundry/modules/avqol",
     "foundryData": "/home/patrickporto/.iron/foundrydata"
 }

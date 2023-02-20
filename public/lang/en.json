@@ -1,6 +1,9 @@
 {
-    "ACTOR.TypeCharacter": "Player Character",
-    "ACTOR.TypeNpc": "No-Player Character",
-    "ITEM.TypeSpell": "Spell",
-    "ITEM.TypeWeapon": "Weapon"
+    "AVQOL.SettingsTitle": "A/V Quality of Life Settings",
+    "AVQOL.PermissionAudio": "Audio Permission",
+    "AVQOL.PermissionVideo": "Video Permission",
+    "AVQOL.PermissionGranted": "Granted",
+    "AVQOL.PermissionDenied": "Denied",
+    "AVQOL.PermissionPrompt": "Prompt",
+    "AVQOL.AudioSettings": "Audio Settings"
 }
