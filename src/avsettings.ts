@@ -10,6 +10,8 @@ import {
 const DEFAULT_AVATAR = "icons/svg/mystery-man.svg";
 
 export class AVQOLSettings extends FormApplication {
+    private animationFrames: Record<string, any> = {}
+
     static get defaultOptions() {
         return mergeObject(super.defaultOptions, {
             classes: ["form", "avqolsettings"],
@@ -160,10 +162,16 @@ export class AVQOLSettings extends FormApplication {
         });
         $(html)
             .find("#videoSrc")
-            .on("change", async ({ target }) => {
+            .on("change", async () => {
                 await this.renderVideoPreview(html);
             });
         await this.renderVideoPreview(html);
+        $(html)
+            .find("#audioSrc")
+            .on("change", async () => {
+                await this.renderAudioSourcePreview(html);
+            });
+        await this.renderAudioSourcePreview(html);
     }
 
     private async checkPermissions() {
@@ -202,8 +210,6 @@ export class AVQOLSettings extends FormApplication {
         const data = await this.getData();
         if (!data.videoDep) return;
         const deviceId = $(html).find("#videoSrc").val() as string;
-        const devices = await this.getVideoDevides();
-        debug("Rendering preview", deviceId);
         const preview = html.find(
             ".avqol-video-preview__video"
         )[0] as HTMLVideoElement;
@@ -213,24 +219,93 @@ export class AVQOLSettings extends FormApplication {
             avatar.show();
             return;
         }
-        if (devices.includes(deviceId)) {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: { deviceId: { exact: deviceId } },
-            });
-            preview.srcObject = stream;
-            avatar.hide();
-            return;
-        }
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-        });
+        const stream = await this.getVideoStream(deviceId);
         preview.srcObject = stream;
         avatar.hide();
+    }
+
+    private async getVideoStream(deviceId: string) {
+        const devices = await this.getVideoDevides();
+        if (devices.includes(deviceId)) {
+            return await navigator.mediaDevices.getUserMedia({
+                video: { deviceId: { exact: deviceId } },
+            });
+        }
+        return await navigator.mediaDevices.getUserMedia({
+            video: true,
+        });
     }
 
     private async getVideoDevides() {
         return (await navigator.mediaDevices.enumerateDevices())
             .filter((device) => device.kind === "videoinput")
+            .map((device) => device.deviceId);
+    }
+
+    async renderAudioSourcePreview(html: JQuery<HTMLElement>) {
+        const data = await this.getData();
+        if (!data.audioDep) return;
+        const deviceId = $(html).find("#audioSrc").val() as string;
+        if (deviceId === "disabled") {
+            this.resetAudioPids('audioSrcPids');
+            return;
+        }
+        const stream = await this.getAudioSourceStream(deviceId)
+
+        this.renderAudioPids('audioSrcPids', stream, $(html).find("#audioSrcPids"));
+    }
+
+    private renderAudioPids(animationFrameId: string, stream: MediaStream, pidsElement: JQuery<HTMLElement>) {
+        const audioContext = new AudioContext();
+        const microphone = audioContext.createMediaStreamSource(stream);
+        const analyser = audioContext.createAnalyser();
+
+        analyser.fftSize = 1024;
+        audioContext.resume();
+        microphone.connect(analyser);
+
+        const update = () => {
+            const array = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(array);
+            const arraySum = array.reduce((a, value) => a + value, 0);
+            const volume = arraySum / array.length;
+
+            const numberOfPidsToColor = Math.round(volume / 10);
+            const pids = pidsElement.find('.avqol-pids__cell');
+            pids.each((index, element) => {
+                if (index < numberOfPidsToColor) {
+                    $(element).addClass('avqol-pids__cell--active');
+                } else {
+                    $(element).removeClass('avqol-pids__cell--active');
+                }
+            });
+            this.animationFrames[animationFrameId] = requestAnimationFrame(update);
+        };
+        this.animationFrames[animationFrameId] = requestAnimationFrame(update);
+    }
+
+    private resetAudioPids(animationFrameId: string) {
+        if (this.animationFrames[animationFrameId]) {
+            cancelAnimationFrame(this.animationFrames[animationFrameId]);
+            this.animationFrames[animationFrameId] = null;
+        }
+    }
+
+    private async getAudioSourceStream(deviceId: string) {
+        const devices = await this.getAudioSourceDevides();
+        if (devices.includes(deviceId)) {
+            return await navigator.mediaDevices.getUserMedia({
+                audio: { deviceId: { exact: deviceId } },
+            });
+        }
+        return await navigator.mediaDevices.getUserMedia({
+            audio: true,
+        });
+    }
+
+    private async getAudioSourceDevides() {
+        return (await navigator.mediaDevices.enumerateDevices())
+            .filter((device) => device.kind === "audioinput")
             .map((device) => device.deviceId);
     }
 }

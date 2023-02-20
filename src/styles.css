@@ -84,3 +84,20 @@
     width: 100%;
     height: 100%;
 }
+
+.avqol-pids {
+    flex: 1;
+    display: flex;
+}
+
+.avqol-pids__cell {
+    background-color: #e6e7e8;
+    width: calc(10% - 10px);
+    height: 10px;
+    display: inline-block;
+    margin: 5px;
+}
+
+.avqol-pids__cell--active {
+    background-color: #69ce2b;
+}
