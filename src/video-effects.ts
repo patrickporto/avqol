@@ -1,9 +1,6 @@
-import '@mediapipe/control_utils/control_utils'
-import '@mediapipe/drawing_utils/drawing_utils'
-import "@mediapipe/camera_utils";
-import "@mediapipe/selfie_segmentation"
+import "@mediapipe/selfie_segmentation";
 import { debug } from "./debug";
-import { CANONICAL_NAME } from './constants';
+import { CANONICAL_NAME } from "./constants";
 
 const STREAM_FPS = 30;
 
@@ -19,8 +16,10 @@ export enum VideoEffect {
 
 export const getVideoEffectsOptions = (): Record<string, string> => ({
     [VideoEffect.NONE]: (game as Game).i18n.localize("None"),
-    [VideoEffect.BLUR_BACKGROUND]: (game as Game).i18n.localize("AVQOL.VideoEffectsBlurBackground"),
-})
+    [VideoEffect.BLUR_BACKGROUND]: (game as Game).i18n.localize(
+        "AVQOL.VideoEffectsBlurBackground"
+    ),
+});
 
 export const applyVideoEffect = async (
     canvas: HTMLCanvasElement,
@@ -33,8 +32,7 @@ export const applyVideoEffect = async (
         return await applyBlurBackground(canvas, video, videoEffectContainer);
     }
     throw new Error("No video effect found");
-}
-
+};
 
 export const applyBlurBackground = async (
     canvas: HTMLCanvasElement,
@@ -42,7 +40,9 @@ export const applyBlurBackground = async (
     videoEffectContainer: HTMLElement
 ): Promise<CameraEffect> => {
     debug("Applying blur background");
-    $(videoEffectContainer).addClass("avqol-video-effect--active");
+    $(videoEffectContainer)
+        .addClass("avqol-video-effect--active")
+        .addClass("avqol-video-effect--loading");
 
     // const ctx = canvas.getContext('webgl2') as WebGL2RenderingContext;
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -69,7 +69,6 @@ export const applyBlurBackground = async (
         ctx.filter = "blur(6px)";
         ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
         ctx.filter = "none";
-
         ctx.restore();
     };
 
@@ -84,19 +83,24 @@ export const applyBlurBackground = async (
     });
     selfieSegmentation.onResults(onResults);
 
-    // @ts-ignore
-    const camera = new Camera(video, {
-        onFrame: async () => {
-            await selfieSegmentation.send({ image: video });
-        },
-        width: 1280,
-        height: 720,
-    });
-    camera.start();
+    let videoRefreshAnimationFrame: null | number = null
 
-    const cancel = () => {
-        camera.stop();
-        $(videoEffectContainer).removeClass("avqol-video-effect--active");
+
+    const refreshVideoEffect = async () => {
+        await selfieSegmentation.send({ image: video });
+        videoRefreshAnimationFrame = requestAnimationFrame(refreshVideoEffect);
+    };
+
+    videoRefreshAnimationFrame = requestAnimationFrame(refreshVideoEffect);
+    $(videoEffectContainer).removeClass("avqol-video-effect--loading");
+
+    const cancel = async () => {
+        if (videoRefreshAnimationFrame) {
+            cancelAnimationFrame(videoRefreshAnimationFrame);
+        }
+        $(videoEffectContainer)
+            .removeClass("avqol-video-effect--active")
+            .removeClass("avqol-video-effect--loading");
     };
 
     return {
@@ -104,7 +108,6 @@ export const applyBlurBackground = async (
         cancel,
     };
 };
-
 
 export const registerSettings = () => {
     (game as Game).settings.register(CANONICAL_NAME, "videoEffects", {
@@ -116,13 +119,19 @@ export const registerSettings = () => {
         type: String,
         choices: getVideoEffectsOptions(),
     });
-}
+};
 
 export const getVideoEffect = (): VideoEffect => {
-    return (game as Game).settings.get(CANONICAL_NAME, "videoEffects") as VideoEffect;
-}
-
+    return (game as Game).settings.get(
+        CANONICAL_NAME,
+        "videoEffects"
+    ) as VideoEffect;
+};
 
 export const setVideoEffect = async (videoEffect: VideoEffect) => {
-    await (game as Game).settings.set(CANONICAL_NAME, "videoEffects", videoEffect);
-}
+    await (game as Game).settings.set(
+        CANONICAL_NAME,
+        "videoEffects",
+        videoEffect
+    );
+};
