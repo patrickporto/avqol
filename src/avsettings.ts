@@ -3,14 +3,18 @@ import { debug } from "./debug";
 import {
     getRTCClientSettings,
     getRTCWorldSettings,
-    getRTCClient as getRTCClient,
+    getRTCClient,
     setRTCClientSettings,
+    updateLocalStream,
 } from "./rtcsettings";
+import { applyCameraEffects } from "./camera-view";
+import { applyBlurBackground, CameraEffect } from "./effects";
 
 const DEFAULT_AVATAR = "icons/svg/mystery-man.svg";
 
 export class AVQOLSettings extends FormApplication {
-    private animationFrames: Record<string, any> = {}
+    private cameraEffects: Record<string, CameraEffect> = {};
+    private animationFrames: Record<string, number | null> = {};
 
     static get defaultOptions() {
         return mergeObject(super.defaultOptions, {
@@ -194,6 +198,9 @@ export class AVQOLSettings extends FormApplication {
                 mode: formData.voiceMode,
             },
         });
+        this.cameraEffects['preview'].cancel()
+        this.cameraEffects['user'] = await applyCameraEffects();
+        // updateLocalStream(this.cameraEffects['user'].stream);
     }
 
     async requestPermissions() {
@@ -221,7 +228,13 @@ export class AVQOLSettings extends FormApplication {
         }
         const stream = await this.getVideoStream(deviceId);
         preview.srcObject = stream;
+        preview.play();
         avatar.hide();
+        const previewCanvas = $(html).find(
+            ".avqol-video-preview__canvas"
+        )[0] as HTMLCanvasElement;
+
+        this.cameraEffects['preview'] = await applyBlurBackground(previewCanvas, preview, $(html).find('.avqol-video-effect')[0]);
     }
 
     private async getVideoStream(deviceId: string) {
@@ -247,15 +260,23 @@ export class AVQOLSettings extends FormApplication {
         if (!data.audioDep) return;
         const deviceId = $(html).find("#audioSrc").val() as string;
         if (deviceId === "disabled") {
-            this.resetAudioPids('audioSrcPids');
+            this.resetAudioPids("audioSrcPids");
             return;
         }
-        const stream = await this.getAudioSourceStream(deviceId)
+        const stream = await this.getAudioSourceStream(deviceId);
 
-        this.renderAudioPids('audioSrcPids', stream, $(html).find("#audioSrcPids"));
+        this.renderAudioPids(
+            "audioSrcPids",
+            stream,
+            $(html).find("#audioSrcPids")
+        );
     }
 
-    private renderAudioPids(animationFrameId: string, stream: MediaStream, pidsElement: JQuery<HTMLElement>) {
+    private renderAudioPids(
+        animationFrameId: string,
+        stream: MediaStream,
+        pidsElement: JQuery<HTMLElement>
+    ) {
         const audioContext = new AudioContext();
         const microphone = audioContext.createMediaStreamSource(stream);
         const analyser = audioContext.createAnalyser();
@@ -271,22 +292,23 @@ export class AVQOLSettings extends FormApplication {
             const volume = arraySum / array.length;
 
             const numberOfPidsToColor = Math.round(volume / 10);
-            const pids = pidsElement.find('.avqol-pids__cell');
+            const pids = pidsElement.find(".avqol-pids__cell");
             pids.each((index, element) => {
                 if (index < numberOfPidsToColor) {
-                    $(element).addClass('avqol-pids__cell--active');
+                    $(element).addClass("avqol-pids__cell--active");
                 } else {
-                    $(element).removeClass('avqol-pids__cell--active');
+                    $(element).removeClass("avqol-pids__cell--active");
                 }
             });
-            this.animationFrames[animationFrameId] = requestAnimationFrame(update);
+            this.animationFrames[animationFrameId] =
+                requestAnimationFrame(update);
         };
         this.animationFrames[animationFrameId] = requestAnimationFrame(update);
     }
 
     private resetAudioPids(animationFrameId: string) {
         if (this.animationFrames[animationFrameId]) {
-            cancelAnimationFrame(this.animationFrames[animationFrameId]);
+            cancelAnimationFrame(this.animationFrames[animationFrameId] as number);
             this.animationFrames[animationFrameId] = null;
         }
     }

@@ -101,3 +101,31 @@
 .avqol-pids__cell--active {
     background-color: #69ce2b;
 }
+
+.avqol-video-effect:not(.avqol-video-effect--active) .avqol-video-preview__canvas {
+    display: none;
+}
+
+.avqol-video-effect.avqol-video-effect--active .avqol-video-preview__video {
+    display: none;
+}
+
+.video-container.avqol-video-effect--active .user-camera {
+    display: none!important;
+}
+
+.avqol-video-preview__canvas,
+.avqol-video-effect__canvas {
+    object-fit: cover;
+    min-width: 100%;
+    min-height: 100%;
+    width: 100%;
+    height: 100%;
+    transform: scaleX(-1);
+    border: none;
+    border-radius: var(--av-border-radius);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
