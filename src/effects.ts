@@ -1,22 +1,15 @@
-import "@tensorflow/tfjs-backend-webgl";
-import * as bodyPix from "@tensorflow-models/body-pix";
+import '@mediapipe/control_utils/control_utils'
+import '@mediapipe/drawing_utils/drawing_utils'
+import "@mediapipe/camera_utils";
+import "@mediapipe/selfie_segmentation"
 import { debug } from "./debug";
-import {
-    getRTCClient,
-    avclientIsLivekit,
-    LivekitAVClient,
-} from "./rtcsettings";
-
-const OPACITY_VALUE = 8;
-const MASK_BLUR_DENSITY = 2;
-const FLIP_HORIZONTAL = false;
 
 const STREAM_FPS = 30;
 
 export type CameraEffect = {
-    stream: MediaStream,
-    cancel: () => void
-}
+    stream: MediaStream;
+    cancel: () => void;
+};
 
 export const applyBlurBackground = async (
     canvas: HTMLCanvasElement,
@@ -25,59 +18,65 @@ export const applyBlurBackground = async (
 ): Promise<CameraEffect> => {
     debug("Applying blur background");
     $(videoEffectContainer).addClass("avqol-video-effect--active");
-    const net = await bodyPix.load({
-        architecture: "MobileNetV1",
-        outputStride: 16,
-        multiplier: 0.75,
-        quantBytes: 2,
-    });
 
     // let lastTime = performance.now();
-    let animationFrame:  number | null = null
+    let animationFrame: number | null = null;
     const cancel = () => {
         if (animationFrame) {
             cancelAnimationFrame(animationFrame);
         }
         $(videoEffectContainer).removeClass("avqol-video-effect--active");
-    }
-    // const gl = canvas.getContext('webgl2');
+    };
+    // const ctx = canvas.getContext('webgl2') as WebGL2RenderingContext;
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
-    let attemps: number = 0;
-    const update = async () => {
-        try {
-            const segmentation = await net.segmentPerson(video, {
-                flipHorizontal: false,
-                internalResolution: "low",
-                segmentationThreshold: 0.7,
-            });
-            video.width = video.width || video.videoWidth;
-            video.height = video.height || video.videoHeight;
+    const onResults = (results: any) => {
+        ctx.save();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            bodyPix.drawBokehEffect(
-                canvas,
-                video,
-                segmentation,
-                OPACITY_VALUE,
-                MASK_BLUR_DENSITY,
-                FLIP_HORIZONTAL
-            );
-            attemps = 0;
-        } catch (e) {
-            attemps++;
-            if (attemps > 1000) {
-                debug("Failed to apply blur background", e);
-                cancel()
-                return;
-            }
-        }
-        animationFrame = requestAnimationFrame(update);
+        // Draw the original image
+        ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+
+        // Mask the image with the segmentation mask.
+        ctx.globalCompositeOperation = "destination-in";
+        ctx.drawImage(
+            results.segmentationMask,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        // Only overwrite missing pixels.
+        ctx.globalCompositeOperation = "destination-atop";
+        ctx.fillStyle = "#00FF00";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.restore();
     };
 
-    video.addEventListener("loadedmetadata", update);
+    // @ts-ignore
+    const selfieSegmentation = new SelfieSegmentation({
+        locateFile: (file: any) => {
+            return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
+        },
+    });
+    selfieSegmentation.setOptions({
+        modelSelection: 1,
+    });
+    selfieSegmentation.onResults(onResults);
 
-    animationFrame = requestAnimationFrame(update);
+    // @ts-ignore
+    const camera = new Camera(video, {
+        onFrame: async () => {
+            await selfieSegmentation.send({ image: video });
+        },
+        width: 1280,
+        height: 720,
+    });
+    camera.start();
     return {
         stream: canvas.captureStream(STREAM_FPS),
         cancel,
-    }
+    };
 };

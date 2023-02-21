@@ -200,7 +200,7 @@ export class AVQOLSettings extends FormApplication {
         });
         this.cameraEffects['preview'].cancel()
         this.cameraEffects['user'] = await applyCameraEffects();
-        // updateLocalStream(this.cameraEffects['user'].stream);
+        updateLocalStream(this.cameraEffects['user'].stream);
     }
 
     async requestPermissions() {
