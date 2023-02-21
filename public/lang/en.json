@@ -9,5 +9,8 @@
     "AVQOL.AudioSettings": "Audio Settings",
     "AVQOL.MenuConfigutation": "Audio/Video Configuration",
     "AVQOL.MenuConfigutationHint": "Configure settings to the integrated A/V with quality of life",
-    "AVQOL.MenuConfigutationLabel": "Configure Audio/Video"
+    "AVQOL.MenuConfigutationLabel": "Configure Audio/Video",
+    "AVQOL.VideoEffects": "Video Effects",
+    "AVQOL.VideoEffectsHint": "Configure video effects, change background, etc.",
+    "AVQOL.VideoEffectsBlurBackground": "Blur Background"
 }

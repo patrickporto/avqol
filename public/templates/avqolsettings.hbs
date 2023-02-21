@@ -19,6 +19,13 @@
             </select>
             <p class="notes">{{localize 'WEBRTC.VideoDeviceNotes'}}</p>
         </div>
+        <div class="form-group">
+            <label for="videoEffect">{{localize 'AVQOL.VideoEffects'}}</label>
+            <select name="videoEffect" id="videoEffect">
+                {{selectOptions videoEffects selected=videoEffect}}
+            </select>
+            <p class="notes">{{localize 'AVQOL.VideoEffectsHint'}}</p>
+        </div>
         {{else}}
 
         <div class="avqol-permissions">

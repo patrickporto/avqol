@@ -39,9 +39,9 @@ export const getRTCClient = (): AVQOLClient => {
     return game.webrtc.client;
 }
 
-export const setRTCClientSettings = (settings: RTCClientSettings) => {
+export const setRTCClientSettings = async (settings: RTCClientSettings) => {
     const currentSettings = (game as Game).settings.get("core", "rtcClientSettings");
-    (game as Game).settings.set("core", "rtcClientSettings", {
+    await (game as Game).settings.set("core", "rtcClientSettings", {
         ...currentSettings,
         ...settings,
         voice: {

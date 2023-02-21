@@ -5,15 +5,14 @@ import {
     getRTCWorldSettings,
     getRTCClient,
     setRTCClientSettings,
-    updateLocalStream,
 } from "./rtcsettings";
 import { applyCameraEffects } from "./camera-view";
-import { applyBlurBackground, CameraEffect } from "./effects";
+import { applyVideoEffect, CameraEffect, getVideoEffect, getVideoEffectsOptions, setVideoEffect, VideoEffect } from "./video-effects";
 
 const DEFAULT_AVATAR = "icons/svg/mystery-man.svg";
 
 export class AVQOLSettings extends FormApplication {
-    private cameraEffects: Record<string, CameraEffect> = {};
+    private previewCameraEffects: CameraEffect | null = null;
     private animationFrames: Record<string, number | null> = {};
 
     static get defaultOptions() {
@@ -63,6 +62,8 @@ export class AVQOLSettings extends FormApplication {
             audioOutputDevices: await this.getAudioOutputs(),
             voiceMode: getRTCClientSettings().voice.mode,
             voiceModes: this.getVoiceModes(),
+            videoEffects: getVideoEffectsOptions(),
+            videoEffect: getVideoEffect(),
         };
     }
     getVoiceModes() {
@@ -165,6 +166,11 @@ export class AVQOLSettings extends FormApplication {
             await this.renderVideoPreview(html);
         });
         $(html)
+            .find("#videoEffect")
+            .on("change", async () => {
+                await this.renderVideoPreview(html);
+            });
+        $(html)
             .find("#videoSrc")
             .on("change", async () => {
                 await this.renderVideoPreview(html);
@@ -190,7 +196,7 @@ export class AVQOLSettings extends FormApplication {
 
     async _updateObject(event: Event, formData: any) {
         debug("Updating RTC Client settings", formData);
-        setRTCClientSettings({
+        await setRTCClientSettings({
             videoSrc: formData.videoSrc,
             audioSrc: formData.audioSrc,
             audioSink: formData.audioSink,
@@ -198,9 +204,12 @@ export class AVQOLSettings extends FormApplication {
                 mode: formData.voiceMode,
             },
         });
-        this.cameraEffects['preview'].cancel()
-        this.cameraEffects['user'] = await applyCameraEffects();
-        updateLocalStream(this.cameraEffects['user'].stream);
+        await setVideoEffect(formData.videoEffect);
+        if (formData.videoEffect === VideoEffect.NONE) {
+            return
+        }
+        this.previewCameraEffects?.cancel();
+        await applyCameraEffects();
     }
 
     async requestPermissions() {
@@ -228,13 +237,19 @@ export class AVQOLSettings extends FormApplication {
         }
         const stream = await this.getVideoStream(deviceId);
         preview.srcObject = stream;
-        preview.play();
         avatar.hide();
+        const selectedVideoEffect = $(html).find('#videoEffect').val() as VideoEffect;
+
+        if (selectedVideoEffect === VideoEffect.NONE) {
+            this.previewCameraEffects?.cancel();
+            return
+        }
         const previewCanvas = $(html).find(
             ".avqol-video-preview__canvas"
         )[0] as HTMLCanvasElement;
 
-        this.cameraEffects['preview'] = await applyBlurBackground(previewCanvas, preview, $(html).find('.avqol-video-effect')[0]);
+        const videoEffectContainer = $(html).find('.avqol-video-effect')[0];
+        this.previewCameraEffects = await applyVideoEffect(previewCanvas, preview, videoEffectContainer, selectedVideoEffect);
     }
 
     private async getVideoStream(deviceId: string) {

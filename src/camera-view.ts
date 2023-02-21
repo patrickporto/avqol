@@ -1,9 +1,10 @@
 import { debug } from "./debug";
-import { applyBlurBackground, CameraEffect } from "./effects";
+import { updateLocalStream } from "./rtcsettings";
+import { applyVideoEffect, getVideoEffect, VideoEffect } from "./video-effects";
 
 
 
-export const applyCameraEffects = async (): Promise<CameraEffect> => {
+export const applyCameraEffects = async (): Promise<void> => {
     const cameraView = $(`.camera-view[data-user="${(game as Game).userId}"]`)
     if (!cameraView.length) {
         throw new Error("No camera view found");
@@ -22,5 +23,11 @@ export const applyCameraEffects = async (): Promise<CameraEffect> => {
         $(video).after(canvas);
     }
     cameraView.find('.video-container').addClass('avqol-video-effect')
-    return await applyBlurBackground(canvas, video, cameraView[0]);
+    const videoEffect = getVideoEffect()
+    if (videoEffect === VideoEffect.NONE) {
+        return
+    }
+    const cameraEffect = await applyVideoEffect(canvas, video, cameraView[0], videoEffect);
+    updateLocalStream(cameraEffect.stream);
+
 }
