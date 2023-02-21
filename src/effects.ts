@@ -48,9 +48,10 @@ export const applyBlurBackground = async (
         );
 
         // Only overwrite missing pixels.
-        ctx.globalCompositeOperation = "destination-atop";
-        ctx.fillStyle = "#00FF00";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.globalCompositeOperation = "destination-over";
+        ctx.filter = "blur(6px)";
+        ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+        ctx.filter = "none";
 
         ctx.restore();
     };
