@@ -7,9 +7,7 @@ import blur from "./blur"
 Hooks.on("AVQOL.init", function(avqol: AVQOL) {
     debug('initializing AVQOL video effects')
     avqol.registerVideoEffect(VideoEffect.BLUR_BACKGROUND, {
-        label: (game as Game).i18n.localize(
-            "AVQOL.VideoEffectsBlurBackground"
-        ),
+        label: "AVQOL.VideoEffectsBlurBackground",
         render: blur
     })
 })

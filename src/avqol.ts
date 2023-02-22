@@ -23,7 +23,7 @@ export class AVQOL {
             [VideoEffect.NONE]: (game as Game).i18n.localize("None"),
         };
         for (const [name, config] of Object.entries(this.videoEffects)) {
-            videoEffects[name] = config.label;
+            videoEffects[name] = (game as Game).i18n.localize(config.label);
         }
         return videoEffects;
     }
