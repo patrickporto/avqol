@@ -1,7 +1,8 @@
 import { CANONICAL_NAME, VideoEffect } from "./constants";
 import { debug } from "./debug";
-import { updateLocalStream } from "./rtcsettings";
 import { applyEffect, getVideoEffect } from "./camera-effects";
+import { updateLocalStream } from "./rtcsettings";
+import { getAVQOLAPI } from "./avqol";
 
 export const applyCameraEffects = async (): Promise<void> => {
     debug("Applying camera effects");
@@ -40,6 +41,9 @@ export const applyCameraEffects = async (): Promise<void> => {
 Hooks.on(
     "renderCameraViews",
     async () => {
-        await applyCameraEffects();
+        const avqol = getAVQOLAPI();
+        if (avqol.allowPlay) {
+            await applyCameraEffects();
+        }
     }
 );

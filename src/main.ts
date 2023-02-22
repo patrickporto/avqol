@@ -16,6 +16,7 @@ Hooks.on("init", async () => {
     Hooks.callAll("AVQOL.init", avqol);
     if (shouldOverrideInitWebRTC()) {
         avqol.allowPlay = false
+        $(document.body).addClass('avqol-deny-play')
         // @ts-ignore
         libWrapper.register(CANONICAL_NAME, 'AVMaster.prototype.connect', (wrapper: any) =>{
             if (!avqol.allowPlay) {
@@ -23,6 +24,7 @@ Hooks.on("init", async () => {
                 return false
             }
             debug('User is allowed to play, connecting to AV');
+            $(document.body).removeClass('avqol-deny-play')
             return wrapper()
         }, 'MIXED')
     }

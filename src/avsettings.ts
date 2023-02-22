@@ -201,8 +201,9 @@ export class AVQOLSettings extends FormApplication {
 
     async _updateObject(event: Event, formData: any) {
         debug("Updating RTC Client settings", formData);
-        if (shouldOverrideInitWebRTC()) {
-            getAVQOLAPI().allowPlay = true;
+        const avqol = getAVQOLAPI()
+        if (!avqol.allowPlay) {
+            avqol.allowPlay = true;
             // @ts-ignore
             (game as Game).webrtc.connect()
         }

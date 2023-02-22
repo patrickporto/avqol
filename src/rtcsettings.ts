@@ -63,7 +63,6 @@ export const updateLocalStream = async (stream: MediaStream) => {
     if (avclientIsLivekit()) {
         debug('Updating local stream with camera effects')
         const rtcClient = getRTCClient() as LivekitAVClient;
-        debug(rtcClient._liveKitClient.videoTrack)
         if (rtcClient._liveKitClient.videoTrack?.sender) {
             rtcClient._liveKitClient.videoTrack.sender.replaceTrack(
                 stream.getVideoTracks()[0]

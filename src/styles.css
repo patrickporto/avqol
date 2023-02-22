@@ -157,7 +157,26 @@
     }
 }
 
-
 .camera-view .player-name {
     z-index: 1;
+}
+/*
+
+.avqol-deny-play #camera-views,
+.avqol-deny-play #interface,
+.avqol-deny-play #board {
+    filter: blur(4px);
+    pointer-events: none!important;
+} */
+
+.avqol-deny-play::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+    backdrop-filter: blur(6px);
 }
