@@ -1,4 +1,5 @@
-export default (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
+export default (canvas: HTMLCanvasElement) => {
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     return (results: any) => {
         ctx.save();
         ctx.clearRect(0, 0, canvas.width, canvas.height);

@@ -9,7 +9,9 @@ export type CameraEffect = {
     stream: MediaStream;
     cancel: () => void;
 };
-export type VideoEffectRender = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => (results: any) => void;
+export type VideoEffectRender = (
+    canvas: HTMLCanvasElement
+) => (results: any) => void;
 
 export const applyEffect = async (
     canvas: HTMLCanvasElement,
@@ -18,27 +20,34 @@ export const applyEffect = async (
     videoEffect: string
 ): Promise<CameraEffect> => {
     debug("Applying video effect", videoEffect);
-    const render = getAVQOLAPI().getVideoEffectRender(videoEffect)
+    const render = getAVQOLAPI().getVideoEffectRender(videoEffect);
     if (!render) {
         throw new Error("No video effect found: " + videoEffect);
     }
-    return await renderCameraEffect(canvas, video, videoEffectContainer, render);
+    return await renderCameraEffect(
+        canvas,
+        video,
+        videoEffectContainer,
+        render
+    );
+};
+
+const flipCanvasHorizontal = (canvas: HTMLCanvasElement) => {
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+    ctx.scale(-1, 1);
+    ctx.translate(-canvas.width, 0);
 };
 
 const renderCameraEffect = async (
     canvas: HTMLCanvasElement,
     video: HTMLVideoElement,
     videoEffectContainer: HTMLElement,
-    videoEffectRender: VideoEffectRender,
+    videoEffectRender: VideoEffectRender
 ): Promise<CameraEffect> => {
     debug("Applying blur background");
     $(videoEffectContainer)
         .addClass("avqol-video-effect--active")
         .addClass("avqol-video-effect--loading");
-
-    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-
-    const onResults = videoEffectRender(ctx, canvas);
 
     // @ts-ignore
     const selfieSegmentation = new SelfieSegmentation({
@@ -49,16 +58,19 @@ const renderCameraEffect = async (
     selfieSegmentation.setOptions({
         modelSelection: 1,
     });
-    selfieSegmentation.onResults(onResults);
+    selfieSegmentation.onResults((results: any) => {
+        flipCanvasHorizontal(canvas);
+        videoEffectRender(canvas)(results)
+    });
 
-    let videoRefreshAnimationFrame: null | number = null
+    let videoRefreshAnimationFrame: null | number = null;
 
     const refreshVideoEffect = async () => {
         if (video.videoWidth === 0 || video.videoHeight === 0) {
             await new Promise((resolve) => {
-                video.addEventListener("loadedmetadata", resolve)
-            })
-            video.play()
+                video.addEventListener("loadedmetadata", resolve);
+            });
+            video.play();
         }
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -109,5 +121,3 @@ export const setVideoEffect = async (videoEffect: VideoEffect) => {
         videoEffect
     );
 };
-
-
