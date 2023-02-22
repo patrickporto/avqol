@@ -1,15 +1,17 @@
 import { getAVQOLAPI, registerAVQOLAPI } from "./avqol";
-import { CANONICAL_NAME } from "./constants";
+import { VideoEffect } from "./constants";
 import { debug } from "./debug";
 import registerSettings from "./module-settings";
 import { getRTCWorldSettings } from "./rtcsettings";
 import './styles.css'
 import "./camera-view"
+import "./video-effects"
 
-Hooks.on("init", function(...rest) {
+Hooks.on("init", async () => {
     registerSettings();
     debug('initializing AVQOL');
     registerAVQOLAPI();
+    Hooks.callAll("AVQOL.init", getAVQOLAPI());
 });
 
 Hooks.on("ready", function() {

@@ -1,9 +1,32 @@
 import { AVQOLSettings } from "./avsettings";
-import { CANONICAL_NAME } from "./constants"
+import { CANONICAL_NAME, VideoEffect } from "./constants"
+import { VideoEffectRender } from "./camera-effects";
 
-class AVQOL {
+type VideoEffectConfig = {
+    label: string;
+    render: VideoEffectRender;
+}
+
+export class AVQOL {
+    private videoEffects: Record<string, VideoEffectConfig> = {};
+
     openSettings() {
         new AVQOLSettings('avqolSettings').render(true);
+    }
+
+    registerVideoEffect(name: string, videoEffectConfig: VideoEffectConfig) {
+        this.videoEffects[name] = videoEffectConfig;
+    }
+
+    getVideoEffects(): Record<string, string> {
+        return {
+            [VideoEffect.NONE]: (game as Game).i18n.localize("None"),
+            ...this.videoEffects
+        };
+    }
+
+    getVideoEffectRender(name: string): VideoEffectRender | null {
+        return this.videoEffects[name]?.render ?? null;
     }
 }
 

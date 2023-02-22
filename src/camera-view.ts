@@ -1,7 +1,7 @@
-import { CANONICAL_NAME } from "./constants";
+import { CANONICAL_NAME, VideoEffect } from "./constants";
 import { debug } from "./debug";
 import { updateLocalStream } from "./rtcsettings";
-import { applyVideoEffect, getVideoEffect, VideoEffect } from "./video-effects";
+import { applyEffect, getVideoEffect } from "./camera-effects";
 
 export const applyCameraEffects = async (): Promise<void> => {
     debug("Applying camera effects");
@@ -26,7 +26,7 @@ export const applyCameraEffects = async (): Promise<void> => {
         video.after(canvas);
     }
     cameraView.find(".video-container").addClass("avqol-video-effect");
-    const cameraEffect = await applyVideoEffect(
+    const cameraEffect = await applyEffect(
         canvas,
         video[0] as HTMLVideoElement,
         cameraView[0],

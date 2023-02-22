@@ -1,6 +1,7 @@
 import "@mediapipe/selfie_segmentation";
 import { debug } from "./debug";
-import { CANONICAL_NAME } from "./constants";
+import { CANONICAL_NAME, VideoEffect } from "./constants";
+import { getAVQOLAPI } from "./avqol";
 
 const STREAM_FPS = 30;
 
@@ -8,36 +9,27 @@ export type CameraEffect = {
     stream: MediaStream;
     cancel: () => void;
 };
+export type VideoEffectRender = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => (results: any) => void;
 
-export enum VideoEffect {
-    NONE = "NONE",
-    BLUR_BACKGROUND = "BLUR_BACKGROUND",
-}
-
-export const getVideoEffectsOptions = (): Record<string, string> => ({
-    [VideoEffect.NONE]: (game as Game).i18n.localize("None"),
-    [VideoEffect.BLUR_BACKGROUND]: (game as Game).i18n.localize(
-        "AVQOL.VideoEffectsBlurBackground"
-    ),
-});
-
-export const applyVideoEffect = async (
+export const applyEffect = async (
     canvas: HTMLCanvasElement,
     video: HTMLVideoElement,
     videoEffectContainer: HTMLElement,
-    videoEffect: VideoEffect
+    videoEffect: string
 ): Promise<CameraEffect> => {
     debug("Applying video effect", videoEffect);
-    if (videoEffect === VideoEffect.BLUR_BACKGROUND) {
-        return await applyBlurBackground(canvas, video, videoEffectContainer);
+    const render = getAVQOLAPI().getVideoEffectRender(videoEffect)
+    if (!render) {
+        throw new Error("No video effect found: " + videoEffect);
     }
-    throw new Error("No video effect found");
+    return await renderCameraEffect(canvas, video, videoEffectContainer, render);
 };
 
-export const applyBlurBackground = async (
+const renderCameraEffect = async (
     canvas: HTMLCanvasElement,
     video: HTMLVideoElement,
-    videoEffectContainer: HTMLElement
+    videoEffectContainer: HTMLElement,
+    videoEffectRender: VideoEffectRender,
 ): Promise<CameraEffect> => {
     debug("Applying blur background");
     $(videoEffectContainer)
@@ -46,30 +38,7 @@ export const applyBlurBackground = async (
 
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
-    const onResults = (results: any) => {
-        ctx.save();
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw the original image
-        ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
-
-        // Mask the image with the segmentation mask.
-        ctx.globalCompositeOperation = "destination-in";
-        ctx.drawImage(
-            results.segmentationMask,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-        // Only overwrite missing pixels.
-        ctx.globalCompositeOperation = "destination-over";
-        ctx.filter = "blur(6px)";
-        ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
-        ctx.filter = "none";
-        ctx.restore();
-    };
+    const onResults = videoEffectRender(ctx, canvas);
 
     // @ts-ignore
     const selfieSegmentation = new SelfieSegmentation({
@@ -123,15 +92,14 @@ export const registerSettings = () => {
         config: false,
         default: VideoEffect.NONE,
         type: String,
-        choices: getVideoEffectsOptions(),
     });
 };
 
-export const getVideoEffect = (): VideoEffect => {
+export const getVideoEffect = (): string => {
     return (game as Game).settings.get(
         CANONICAL_NAME,
         "videoEffects"
-    ) as VideoEffect;
+    ) as string;
 };
 
 export const setVideoEffect = async (videoEffect: VideoEffect) => {
@@ -141,3 +109,5 @@ export const setVideoEffect = async (videoEffect: VideoEffect) => {
         videoEffect
     );
 };
+
+

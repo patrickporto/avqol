@@ -1,4 +1,4 @@
-import { TEMPLATE_PATH } from "./constants";
+import { TEMPLATE_PATH, VideoEffect } from "./constants";
 import { debug } from "./debug";
 import {
     getRTCClientSettings,
@@ -8,13 +8,12 @@ import {
 } from "./rtcsettings";
 import { applyCameraEffects } from "./camera-view";
 import {
-    applyVideoEffect,
+    applyEffect,
     CameraEffect,
     getVideoEffect,
-    getVideoEffectsOptions,
     setVideoEffect,
-    VideoEffect,
-} from "./video-effects";
+} from "./camera-effects";
+import { getAVQOLAPI } from "./avqol";
 
 const DEFAULT_AVATAR = "icons/svg/mystery-man.svg";
 
@@ -44,6 +43,7 @@ export class AVQOLSettings extends FormApplication {
             name: "camera",
         });
         const rtcWorldSettings = getRTCWorldSettings();
+        const avqol = getAVQOLAPI()
         return {
             avatar: (game as Game).user?.avatar ?? DEFAULT_AVATAR,
             microphoneStatus: microphoneStatus.state,
@@ -67,7 +67,7 @@ export class AVQOLSettings extends FormApplication {
             audioOutputDevices: await this.getAudioOutputs(),
             voiceMode: getRTCClientSettings().voice.mode,
             voiceModes: this.getVoiceModes(),
-            videoEffects: getVideoEffectsOptions(),
+            videoEffects: avqol.getVideoEffects(),
             videoEffect: getVideoEffect(),
         };
     }
@@ -272,7 +272,7 @@ export class AVQOLSettings extends FormApplication {
         const videoEffectContainer = $(html).find(
             ".avqol-video-preview__container"
         )[0];
-        this.previewCameraEffects = await applyVideoEffect(
+        this.previewCameraEffects = await applyEffect(
             previewCanvas,
             preview,
             videoEffectContainer,
