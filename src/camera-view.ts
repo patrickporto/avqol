@@ -1,11 +1,12 @@
 import { CANONICAL_NAME, VideoEffect } from "./constants";
 import { debug } from "./debug";
-import { applyEffect, getVideoEffect } from "./camera-effects";
-import { updateLocalStream } from "./rtcsettings";
+import { applyEffect, CameraEffect, getVideoEffect } from "./camera-effects";
+import { cameraEffectsIsSupported, updateLocalStream } from "./rtcsettings";
 import { getAVQOLAPI } from "./avqol";
 
+let cameraEffect: null | CameraEffect = null;
+
 export const applyCameraEffects = async (): Promise<void> => {
-    debug("Applying camera effects");
     const cameraView = $(`.camera-view[data-user="${(game as Game).userId}"]`);
     if (!cameraView.length) {
         return
@@ -14,10 +15,19 @@ export const applyCameraEffects = async (): Promise<void> => {
     if (!video) {
         return
     }
+    if (!cameraEffectsIsSupported()) {
+        debug("Camera effects are not supported");
+        return
+    }
     const videoEffect = getVideoEffect();
     if (videoEffect === VideoEffect.NONE) {
+        debug("Removing camera effects");
+        cameraEffect?.cancel();
+        // @ts-ignore
+        ui.webrtc.render()
         return;
     }
+    debug("Applying camera effects");
     let canvas = cameraView.find(
         ".avqol-video-effect__canvas"
     )[0] as HTMLCanvasElement;
@@ -27,7 +37,7 @@ export const applyCameraEffects = async (): Promise<void> => {
         video.after(canvas);
     }
     cameraView.find(".video-container").addClass("avqol-video-effect");
-    const cameraEffect = await applyEffect(
+    cameraEffect = await applyEffect(
         canvas,
         video[0] as HTMLVideoElement,
         cameraView[0],

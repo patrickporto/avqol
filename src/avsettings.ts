@@ -5,6 +5,7 @@ import {
     getRTCWorldSettings,
     getRTCClient,
     setRTCClientSettings,
+    cameraEffectsIsSupported,
 } from "./rtcsettings";
 import { applyCameraEffects } from "./camera-view";
 import {
@@ -43,7 +44,7 @@ export class AVQOLSettings extends FormApplication {
             name: "camera",
         });
         const rtcWorldSettings = getRTCWorldSettings();
-        const avqol = getAVQOLAPI()
+        const avqol = getAVQOLAPI();
         return {
             avatar: (game as Game).user?.avatar ?? DEFAULT_AVATAR,
             microphoneStatus: microphoneStatus.state,
@@ -178,6 +179,7 @@ export class AVQOLSettings extends FormApplication {
         $(html)
             .find("#videoSrc")
             .on("change", async () => {
+                await this.checkVideoEffectAvailability(html);
                 await this.changeVideoPreviewSource(html);
             });
         await this.changeVideoPreviewSource(html);
@@ -187,6 +189,19 @@ export class AVQOLSettings extends FormApplication {
                 await this.renderAudioSourcePreview(html);
             });
         await this.renderAudioSourcePreview(html);
+        await this.checkVideoEffectAvailability(html);
+    }
+
+    async checkVideoEffectAvailability(html: JQuery<HTMLElement>) {
+        if (!cameraEffectsIsSupported()) {
+            $(html).find("#videoEffect").attr("disabled", "disabled").val(VideoEffect.NONE);
+            return
+        }
+        if ($(html).find("#videoSrc").val() === "disabled") {
+            $(html).find("#videoEffect").attr("disabled", "disabled").val(VideoEffect.NONE);
+            return
+        }
+        $(html).find("#videoEffect").removeAttr("disabled")
     }
 
     // private async checkPermissions() {
@@ -201,11 +216,11 @@ export class AVQOLSettings extends FormApplication {
 
     async _updateObject(event: Event, formData: any) {
         debug("Updating RTC Client settings", formData);
-        const avqol = getAVQOLAPI()
+        const avqol = getAVQOLAPI();
         if (!avqol.allowPlay) {
             avqol.allowPlay = true;
             // @ts-ignore
-            (game as Game).webrtc.connect()
+            (game as Game).webrtc.connect();
         }
         await setRTCClientSettings({
             videoSrc: formData.videoSrc,
@@ -215,9 +230,10 @@ export class AVQOLSettings extends FormApplication {
                 mode: formData.voiceMode,
             },
         });
-        await setVideoEffect(formData.videoEffect);
-        if (formData.videoEffect === VideoEffect.NONE) {
-            return;
+        if (formData.videoSrc === "disabled") {
+            await setVideoEffect(VideoEffect.NONE);
+        } else {
+            await setVideoEffect(formData.videoEffect);
         }
         this.previewCameraEffects?.cancel();
         applyCameraEffects();
