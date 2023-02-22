@@ -1,4 +1,4 @@
-import { TEMPLATE_PATH, VideoEffect } from "./constants";
+import { CANONICAL_NAME, TEMPLATE_PATH, VideoEffect } from "./constants";
 import { debug } from "./debug";
 import {
     getRTCClientSettings,
@@ -13,7 +13,7 @@ import {
     getVideoEffect,
     setVideoEffect,
 } from "./camera-effects";
-import { getAVQOLAPI } from "./avqol";
+import { getAVQOLAPI, shouldOverrideInitWebRTC } from "./avqol";
 
 const DEFAULT_AVATAR = "icons/svg/mystery-man.svg";
 
@@ -201,6 +201,11 @@ export class AVQOLSettings extends FormApplication {
 
     async _updateObject(event: Event, formData: any) {
         debug("Updating RTC Client settings", formData);
+        if (shouldOverrideInitWebRTC()) {
+            getAVQOLAPI().allowPlay = true;
+            // @ts-ignore
+            (game as Game).webrtc.connect()
+        }
         await setRTCClientSettings({
             videoSrc: formData.videoSrc,
             audioSrc: formData.audioSrc,

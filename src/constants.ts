@@ -12,4 +12,5 @@ export enum VideoEffect {
 export enum OpenSettings {
     MANUAL = "MANUAL",
     EVERY_STARTUP = "EVERY_STARTUP",
+    EVERY_STARTUP_FORCED = "EVERY_STARTUP_FORCED",
 }

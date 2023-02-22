@@ -1,5 +1,5 @@
-import { getAVQOLAPI, registerAVQOLAPI, shouldOpenSettings } from "./avqol";
-import { VideoEffect } from "./constants";
+import { getAVQOLAPI, registerAVQOLAPI, shouldOpenSettings, shouldOverrideInitWebRTC } from "./avqol";
+import { CANONICAL_NAME, VideoEffect } from "./constants";
 import { debug } from "./debug";
 import registerSettings from "./module-settings";
 import { getRTCWorldSettings } from "./rtcsettings";
@@ -7,11 +7,25 @@ import './styles.css'
 import "./camera-view"
 import "./video-effects"
 
+
 Hooks.on("init", async () => {
     registerSettings();
     debug('initializing AVQOL');
     registerAVQOLAPI();
-    Hooks.callAll("AVQOL.init", getAVQOLAPI());
+    const avqol = getAVQOLAPI();
+    Hooks.callAll("AVQOL.init", avqol);
+    if (shouldOverrideInitWebRTC()) {
+        avqol.allowPlay = false
+        // @ts-ignore
+        libWrapper.register(CANONICAL_NAME, 'AVMaster.prototype.connect', (wrapper: any) =>{
+            if (!avqol.allowPlay) {
+                debug('User is not allowed to play, not connecting to AV');
+                return false
+            }
+            debug('User is allowed to play, connecting to AV');
+            return wrapper()
+        }, 'MIXED')
+    }
 });
 
 Hooks.on("ready", function() {
