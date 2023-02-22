@@ -4,7 +4,7 @@
 
 Enhancements for the Audio/Video of Foundry VTT.
 
-![A/V Quality of Life Settings](/docs/avsettings.jpg)
+![A/V Quality of Life Settings](/docs/AV-QualityOfLife.png)
 
 ## Features
 
