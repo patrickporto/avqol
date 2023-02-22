@@ -1,4 +1,4 @@
-import { getAVQOLAPI, registerAVQOLAPI } from "./avqol";
+import { getAVQOLAPI, registerAVQOLAPI, shouldOpenSettings } from "./avqol";
 import { VideoEffect } from "./constants";
 import { debug } from "./debug";
 import registerSettings from "./module-settings";
@@ -20,6 +20,8 @@ Hooks.on("ready", function() {
         debug('AV mode is disabled, not rendering AVQOL settings');
         return;
     }
-    debug('AV mode is enabled, rendering AVQOL settings');
-    // getAVQOLAPI().openSettings();
+    if (shouldOpenSettings()) {
+        debug('Opening AVQOL settings');
+        getAVQOLAPI().openSettings();
+    }
 });

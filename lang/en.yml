@@ -12,3 +12,7 @@ AVQOL.MenuConfigutationLabel: Configure Audio/Video
 AVQOL.VideoEffects: Video Effects
 AVQOL.VideoEffectsHint: Configure video effects, change background, etc.
 AVQOL.VideoEffectsBlurBackground: Blur Background
+AVQOL.OpenSettings: Open Settings
+AVQOL.OpenSettingsHint: Open the settings to configure the A/V Quality of Life
+AVQOL.OpenSettingsManual: Manual
+AVQOL.OpenSettingsEveryStartup: Every Startup

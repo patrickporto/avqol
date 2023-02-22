@@ -1,5 +1,5 @@
 import { AVQOLSettings } from "./avsettings";
-import { CANONICAL_NAME, VideoEffect } from "./constants"
+import { CANONICAL_NAME, OpenSettings, VideoEffect } from "./constants"
 import { VideoEffectRender } from "./camera-effects";
 
 type VideoEffectConfig = {
@@ -19,10 +19,13 @@ export class AVQOL {
     }
 
     getVideoEffects(): Record<string, string> {
-        return {
+        const videoEffects: Record<string, string> = {
             [VideoEffect.NONE]: (game as Game).i18n.localize("None"),
-            ...this.videoEffects
         };
+        for (const [name, config] of Object.entries(this.videoEffects)) {
+            videoEffects[name] = config.label;
+        }
+        return videoEffects;
     }
 
     getVideoEffectRender(name: string): VideoEffectRender | null {
@@ -46,10 +49,26 @@ export const registerSettings = () => {
         name: (game as Game).i18n.localize('AVQOL.MenuConfigutation'),
         label: (game as Game).i18n.localize('AVQOL.MenuConfigutationLabel'),
         hint: (game as Game).i18n.localize('AVQOL.MenuConfigutationHint'),
-        // scope: 'client',
-        // requiresReload: true,
         icon: 'fas fa-headset',
         // @ts-ignore
         type: AVQOLSettings,
     });
+    (game as Game).settings.register(CANONICAL_NAME, 'openSettings', {
+        name: (game as Game).i18n.localize('AVQOL.OpenSettings'),
+        hint: (game as Game).i18n.localize('AVQOL.OpenSettingsHint'),
+        scope: 'world',
+        requiresReload: true,
+        config: true,
+        type: String,
+        default: OpenSettings.EVERY_STARTUP,
+        // @ts-ignore
+        choices: {
+            [OpenSettings.MANUAL]: (game as Game).i18n.localize('AVQOL.OpenSettingsManual'),
+            [OpenSettings.EVERY_STARTUP]: (game as Game).i18n.localize('AVQOL.OpenSettingsEveryStartup'),
+        }
+    });
+}
+
+export const shouldOpenSettings = () => {
+    return (game as Game).settings.get(CANONICAL_NAME, 'openSettings') === OpenSettings.EVERY_STARTUP;
 }

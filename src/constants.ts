@@ -7,3 +7,9 @@ export enum VideoEffect {
     NONE = "NONE",
     BLUR_BACKGROUND = "BLUR_BACKGROUND",
 }
+
+
+export enum OpenSettings {
+    MANUAL = "MANUAL",
+    EVERY_STARTUP = "EVERY_STARTUP",
+}
