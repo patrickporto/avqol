@@ -44,7 +44,6 @@ export const applyBlurBackground = async (
         .addClass("avqol-video-effect--active")
         .addClass("avqol-video-effect--loading");
 
-    // const ctx = canvas.getContext('webgl2') as WebGL2RenderingContext;
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
     const onResults = (results: any) => {
@@ -85,14 +84,21 @@ export const applyBlurBackground = async (
 
     let videoRefreshAnimationFrame: null | number = null
 
-
     const refreshVideoEffect = async () => {
+        if (video.videoWidth === 0 || video.videoHeight === 0) {
+            await new Promise((resolve) => {
+                video.addEventListener("loadedmetadata", resolve)
+            })
+            video.play()
+        }
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
         await selfieSegmentation.send({ image: video });
+        $(videoEffectContainer).removeClass("avqol-video-effect--loading");
         videoRefreshAnimationFrame = requestAnimationFrame(refreshVideoEffect);
     };
 
     videoRefreshAnimationFrame = requestAnimationFrame(refreshVideoEffect);
-    $(videoEffectContainer).removeClass("avqol-video-effect--loading");
 
     const cancel = async () => {
         if (videoRefreshAnimationFrame) {

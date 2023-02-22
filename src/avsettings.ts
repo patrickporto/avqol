@@ -214,7 +214,7 @@ export class AVQOLSettings extends FormApplication {
             return;
         }
         this.previewCameraEffects?.cancel();
-        await applyCameraEffects();
+        applyCameraEffects();
     }
 
     async requestPermissions() {

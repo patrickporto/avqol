@@ -16,7 +16,7 @@ type RTCClientSettings = {
 export type LivekitAVClient = AVClient & {
     _liveKitClient: {
         videoTrack: {
-            replaceTrack: (track: MediaStreamTrack) => void
+            sender: RTCRtpSender
         }
     }
 }
@@ -60,11 +60,15 @@ export const cameraEffectsIsSupported = (): boolean => {
 }
 
 export const updateLocalStream = async (stream: MediaStream) => {
-    const rtcClient = getRTCClient() as LivekitAVClient;
     if (avclientIsLivekit()) {
-        rtcClient._liveKitClient.videoTrack.replaceTrack(
-            stream.getVideoTracks()[0]
-        );
+        debug('Updating local stream with camera effects')
+        const rtcClient = getRTCClient() as LivekitAVClient;
+        debug(rtcClient._liveKitClient.videoTrack)
+        if (rtcClient._liveKitClient.videoTrack?.sender) {
+            rtcClient._liveKitClient.videoTrack.sender.replaceTrack(
+                stream.getVideoTracks()[0]
+            );
+        }
     } else {
         // // @ts-ignore
         // const oldStream = this.localStream;

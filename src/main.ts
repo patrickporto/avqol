@@ -4,6 +4,7 @@ import { debug } from "./debug";
 import registerSettings from "./module-settings";
 import { getRTCWorldSettings } from "./rtcsettings";
 import './styles.css'
+import "./camera-view"
 
 Hooks.on("init", function(...rest) {
     registerSettings();
@@ -18,5 +19,5 @@ Hooks.on("ready", function() {
         return;
     }
     debug('AV mode is enabled, rendering AVQOL settings');
-    getAVQOLAPI().openSettings();
+    // getAVQOLAPI().openSettings();
 });
