@@ -1,11 +1,18 @@
 {
     "id": "avqol",
-    "version": "1.0.0",
+    "version": "1.0.0-alpha.1",
     "compatibility": {
         "minimum": "10",
         "verified": "10",
         "maximum": "10"
     },
+    "authors": [
+        {
+            "name": "Darkmoor",
+            "email": "patrick.s.porto@gmail.com",
+            "discord": "patrickporto#9260"
+        }
+    ],
     "title": "A/V Quality of Life",
     "description": "A Quality of Life for Foundry Audio/Video",
     "languages": [
@@ -20,5 +27,11 @@
     ],
     "styles": [
         "avqol.css"
-    ]
+    ],
+    "url": "https://github.com/patrickporto/avqol",
+    "manifest": "https://github.com/patrickporto/avqol/releases/download/1.0.0-alpha.1/module.json",
+    "download": "https://github.com/patrickporto/avqol/releases/download/1.0.0-alpha.1/avqol.zip",
+    "readme": "https://github.com/patrickporto/avqol/blob/main/README.md",
+    "changelog": "https://github.com/patrickporto/avqol/blob/main/CHANGELOG.md",
+    "bugs": "https://github.com/patrickporto/avqol/issues"
 }
