@@ -5,6 +5,7 @@ on:
 
 env:
     MANIFEST_FILE_PATH: dist/module.json
+    RELEASE_NAME: ${{ github.event.release.tag_name }}
 
 jobs:
   run-action:
