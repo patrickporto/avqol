@@ -4,6 +4,7 @@ on:
     types: [published]
 
 env:
+    PKG_NAME: avqol
     MANIFEST_FILE_PATH: dist/module.json
     RELEASE_NAME: ${{ github.event.release.tag_name }}
 
@@ -27,6 +28,16 @@ jobs:
 
       - name: Build
         run: npm run build
+        with:
+            path: ./dist/module.json
+
+      - name: Zip Files
+        working-directory: ./dist
+        run: zip -r ./${{PKG_NAME}}.zip ./*
+
+      - uses: actions/upload-artifact@v3
+        with:
+            path: ./${{PKG_NAME}}.zip
 
       - name: Publish Module to FoundryVTT Website
         uses: Varriount/fvtt-autopublish@v1.1.1
