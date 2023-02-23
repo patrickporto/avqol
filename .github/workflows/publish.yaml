@@ -31,6 +31,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
+            name: module.json
             path: ./dist/module.json
 
       - name: Zip Files
@@ -39,7 +40,8 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-            path: ./${{env.PKG_NAME}}.zip
+            name: ${{env.PKG_NAME}}
+            path: ./dist/${{env.PKG_NAME}}.zip
 
       - name: Publish Module to FoundryVTT Website
         uses: Varriount/fvtt-autopublish@v1.1.1
