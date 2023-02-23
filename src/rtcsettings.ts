@@ -55,34 +55,11 @@ export const avclientIsLivekit = (): boolean => {
     return (game as Game).modules.get("avclient-livekit")?.active ?? false;
 }
 
+export const avclientIsSimplePeer = (): boolean => {
+    // @ts-ignore
+    return (game as Game).webrtc.client?.constructor?.name == "SimplePeerAVClient";
+}
+
 export const cameraEffectsIsSupported = (): boolean => {
     return avclientIsLivekit();
 }
-
-export const updateLocalStream = async (stream: MediaStream) => {
-    if (avclientIsLivekit()) {
-        debug('Updating local stream with camera effects')
-        const rtcClient = getRTCClient() as LivekitAVClient;
-        if (rtcClient._liveKitClient.videoTrack?.sender) {
-            rtcClient._liveKitClient.videoTrack.sender.replaceTrack(
-                stream.getVideoTracks()[0]
-            );
-        }
-    } else {
-        // // @ts-ignore
-        // const oldStream = this.localStream;
-        // // @ts-ignore
-        // rtcClient.localStream = effectStream;
-        // // @ts-ignore
-        // rtcClient.levelsStream = effectStream.clone()
-        // // @ts-ignore
-        // for ( let peer of rtcClient.peers.values() ) {
-        //     if (peer.destroyed) continue;
-        //     if (oldStream) peer.removeStream(oldStream);
-        //     peer.addStream(effectStream);
-        // }
-        // rtcClient._liveKitClient.videoTrack.mediaStream = effectStream.clone();
-        // rtcClient._liveKitClient.videoTrack.setDeviceId(deviceId)
-        debug('Camera effects are not supported with this AV client.')
-    }
-};

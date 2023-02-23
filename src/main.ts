@@ -11,6 +11,7 @@ import { getRTCWorldSettings } from "./rtcsettings";
 import "./styles.css";
 import "./camera-view";
 import "./video-effects";
+// @ts-ignore
 import { libWrapper } from "./third-party/libwrapper-shim.js";
 
 Hooks.on("init", async () => {
@@ -22,7 +23,6 @@ Hooks.on("init", async () => {
     if (isForcedOpenSettings()) {
         debug("Overriding initWebRTC");
         avqol.allowPlay = false;
-        // @ts-ignore
         libWrapper.register(
             CANONICAL_NAME,
             "AVMaster.prototype.connect",

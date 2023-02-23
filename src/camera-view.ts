@@ -1,7 +1,7 @@
 import { CANONICAL_NAME, VideoEffect } from "./constants";
 import { debug } from "./debug";
 import { applyEffect, CameraEffect, getVideoEffect } from "./camera-effects";
-import { cameraEffectsIsSupported, updateLocalStream } from "./rtcsettings";
+import { avclientIsLivekit, cameraEffectsIsSupported, getRTCClient, LivekitAVClient } from "./rtcsettings";
 import { getAVQOLAPI } from "./avqol";
 
 let cameraEffect: null | CameraEffect = null;
@@ -16,7 +16,7 @@ export const applyCameraEffects = async (): Promise<void> => {
         return
     }
     if (!cameraEffectsIsSupported()) {
-        debug("Camera effects are not supported");
+        debug('Camera effects are not supported with this AV client.')
         return
     }
     const videoEffect = getVideoEffect();
@@ -43,8 +43,19 @@ export const applyCameraEffects = async (): Promise<void> => {
         cameraView[0],
         videoEffect
     );
-    if (cameraEffect?.stream) {
-        updateLocalStream(cameraEffect.stream);
+    if (!cameraEffect?.stream) {
+        debug("Camera effect stream is not available");
+        return
+    }
+    if (avclientIsLivekit()) {
+        debug('Updating local stream with camera effects')
+        const rtcClient = getRTCClient() as LivekitAVClient;
+        if (rtcClient._liveKitClient.videoTrack?.sender) {
+            rtcClient._liveKitClient.videoTrack.sender.replaceTrack(
+                cameraEffect?.stream.getVideoTracks()[0]
+            );
+        }
+        return
     }
 }
 
