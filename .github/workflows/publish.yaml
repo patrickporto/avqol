@@ -35,11 +35,11 @@ jobs:
 
       - name: Zip Files
         working-directory: ./dist
-        run: zip -r ./${{PKG_NAME}}.zip ./*
+        run: zip -r ./${{env.PKG_NAME}}.zip ./*
 
       - uses: actions/upload-artifact@v3
         with:
-            path: ./${{PKG_NAME}}.zip
+            path: ./${{env.PKG_NAME}}.zip
 
       - name: Publish Module to FoundryVTT Website
         uses: Varriount/fvtt-autopublish@v1.1.1
