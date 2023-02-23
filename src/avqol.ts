@@ -2,6 +2,7 @@ import { AVQOLSettings } from "./avsettings";
 import { CANONICAL_NAME, OpenSettings, VideoEffect } from "./constants";
 import { VideoEffectRender } from "./camera-effects";
 import { debug } from "./debug";
+import { getRTCWorldSettings } from "./rtcsettings";
 
 type VideoEffectConfig = {
     label: string;
@@ -62,12 +63,10 @@ export const registerSettings = () => {
         [OpenSettings.EVERY_STARTUP]: (game as Game).i18n.localize(
             "AVQOL.OpenSettingsEveryStartup"
         ),
+        [OpenSettings.EVERY_STARTUP_FORCED]: (game as Game).i18n.localize(
+            "AVQOL.OpenSettingsEveryStartupForced"
+        ),
     };
-    if ((game as Game).modules.get("lib-wrapper")?.active) {
-        openSettingsOptions[OpenSettings.EVERY_STARTUP_FORCED] = (
-            game as Game
-        ).i18n.localize("AVQOL.OpenSettingsEveryStartupForced");
-    }
 
     (game as Game).settings.register(CANONICAL_NAME, "openSettings", {
         name: (game as Game).i18n.localize("AVQOL.OpenSettings"),
@@ -88,6 +87,6 @@ export const shouldOpenSettings = () => {
     ].includes((game as Game).settings.get(CANONICAL_NAME, "openSettings") as OpenSettings);
 };
 
-export const shouldOverrideInitWebRTC = () => {
-    return (game as Game).settings.get(CANONICAL_NAME, "openSettings") === OpenSettings.EVERY_STARTUP_FORCED && (game as Game).modules.get("lib-wrapper")?.active;
+export const isForcedOpenSettings = () => {
+    return (game as Game).settings.get(CANONICAL_NAME, "openSettings") === OpenSettings.EVERY_STARTUP_FORCED;
 };

@@ -14,7 +14,7 @@ import {
     getVideoEffect,
     setVideoEffect,
 } from "./camera-effects";
-import { getAVQOLAPI, shouldOverrideInitWebRTC } from "./avqol";
+import { getAVQOLAPI } from "./avqol";
 
 const DEFAULT_AVATAR = "icons/svg/mystery-man.svg";
 
