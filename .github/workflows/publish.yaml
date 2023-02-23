@@ -43,13 +43,6 @@ jobs:
                     ./dist/${{env.PKG_NAME}}.zip
                     ./dist/module.json
 
-            - name: Upload release artifacts
-              uses: Roang-zero1/github-upload-release-artifacts-action@v2
-              with:
-                  args: "dist/bin/ dist/shell/compiled.sh"
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
             - name: Publish Module to FoundryVTT Website
               uses: Varriount/fvtt-autopublish@v1.1.1
               with:
