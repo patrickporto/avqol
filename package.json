@@ -11,7 +11,7 @@
         "url": "https://github.com/patrickporto/avqol"
     },
     "devDependencies": {
-        "@darkmoor/iron": "^1.0.0",
+        "@darkmoor/iron": "^1.0.1",
         "@league-of-foundry-developers/foundry-vtt-types": "git://github.com/League-of-Foundry-Developers/foundry-vtt-types.git#main",
         "tslib": "^2.5.0",
         "typescript": "^4.9.5",
