@@ -29,6 +29,9 @@ jobs:
             - name: Install dependencies
               run: npm ci
 
+            - name: Bump version
+              run: npm version ${{ github.event.release.tag_name }} --no-git-tag-version
+
             - name: Build
               run: npm run build
 
@@ -42,8 +45,14 @@ jobs:
                   files: |
                     ./dist/${{env.PKG_NAME}}.zip
                     ./dist/module.json
+            - name: Commit and push
+              run: |
+                  git config user.name github-actions
+                  git config user.email github-actions@github.com
+                  git commit -am "chore(release): ${{ github.event.release.tag_name }}"
+                  git push origin HEAD:main
 
-            - name: Publish Module to FoundryVTT Website
+            - name: Upload to FoundryVTT
               uses: Varriount/fvtt-autopublish@v1.1.1
               with:
                   username: ${{ secrets.FOUNDRY_ADMIN_USERNAME }}
