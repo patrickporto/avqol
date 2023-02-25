@@ -3,7 +3,8 @@
     "version": "1.0.0-alpha.1",
     "private": true,
     "scripts": {
-        "build": "iron build && vite build",
+        "build": "vite build",
+        "build:config": "iron build",
         "build:watch": "vite build --watch"
     },
     "repository": {
