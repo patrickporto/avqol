@@ -1,6 +1,6 @@
 {
     "name": "avqol",
-    "version": "1.0.0-alpha.1",
+    "version": "1.0.0-alpha.2",
     "private": true,
     "scripts": {
         "build": "vite build",
@@ -11,9 +11,7 @@
         "postversion:update-module-manifest": "jq '.manifest = \"https://github.com/patrickporto/avqol/releases/download/'${npm_package_version}'/module.json\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json",
         "postversion:update-module-download": "jq '.download = \"https://github.com/patrickporto/avqol/releases/download/'${npm_package_version}'/avqol.zip\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json"
     },
-    "config": {
-
-    },
+    "config": {},
     "repository": {
         "type": "git",
         "url": "https://github.com/patrickporto/avqol"
