@@ -19,5 +19,7 @@
     "AVQOL.OpenSettingsEveryStartup": "Every Startup",
     "AVQOL.OpenSettingsEveryStartupForced": "Every Startup (Forced)",
     "AVQOL.UserExperienceDisableHideUser": "Disable hide user",
-    "AVQOL.UserExperienceDisableHideUserHint": "Disable the hide user feature, so the user will always be visible"
+    "AVQOL.UserExperienceDisableHideUserHint": "Disable the hide user control",
+    "AVQOL.UserExperienceDisablePopout": "Disable pop out",
+    "AVQOL.UserExperienceDisablePopoutHint": "Disable the pop out control"
 }

@@ -11,10 +11,23 @@ export const registerSettings = () => {
         default: true,
         type: Boolean,
         onChange: () => {
-            debug("Updating hide user button");
             const cameraViews = ui.webrtc?.element;
             if (cameraViews) {
                 updateHideUserButton(cameraViews);
+            }
+        }
+    });
+    (game as Game).settings.register(CANONICAL_NAME, "disablePopout", {
+        name: "AVQOL.UserExperienceDisablePopout",
+        hint: "AVQOL.UserExperienceDisablePopoutHint",
+        scope: "world",
+        config: true,
+        default: true,
+        type: Boolean,
+        onChange: () => {
+            const cameraViews = ui.webrtc?.element;
+            if (cameraViews) {
+                updateDisablePopoutButton(cameraViews);
             }
         }
     });
@@ -24,6 +37,13 @@ export const getDisableHideUser = (): string => {
     return (game as Game).settings.get(
         CANONICAL_NAME,
         "disableHideUser"
+    ) as string;
+};
+
+export const getDisablePopout = (): string => {
+    return (game as Game).settings.get(
+        CANONICAL_NAME,
+        "disablePopout"
     ) as string;
 };
 
@@ -37,10 +57,21 @@ const updateHideUserButton = (html: JQuery<HTMLElement>) => {
     }
 };
 
+const updateDisablePopoutButton = (html: JQuery<HTMLElement>) => {
+    if (getDisablePopout()) {
+        debug("Disabling popout button");
+        html.find('.av-control[data-action="toggle-popout"]').addClass('avqol-control--disabled');
+    } else {
+        debug("Enabling popout button");
+        html.find('.av-control[data-action="toggle-popout"]').removeClass('avqol-control--disabled');
+    }
+};
+
 
 Hooks.on(
     "renderCameraViews",
     async (_: any, html: JQuery<HTMLElement>) => {
         updateHideUserButton(html);
+        updateDisablePopoutButton(html);
     }
 );
