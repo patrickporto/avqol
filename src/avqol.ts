@@ -1,16 +1,14 @@
 import { AVQOLSettings } from "./avsettings";
-import { CANONICAL_NAME, OpenSettings, VideoEffect } from "./constants";
-import { CameraEffect, VideoEffectRender } from "./camera-effects";
-import { debug } from "./debug";
-import { getRTCWorldSettings } from "./rtcsettings";
+import { CANONICAL_NAME, OpenSettings, VirtualBackground } from "./constants";
+import { CameraEffect, VirtualBackgroundRender } from "./camera-effects";
 
-type VideoEffectConfig = {
+type VirtualBackgroundConfig = {
     label: string;
-    render: VideoEffectRender;
+    render: VirtualBackgroundRender;
 };
 
 export class AVQOL {
-    private videoEffects: Record<string, VideoEffectConfig> = {};
+    private virtualBackgrounds: Record<string, VirtualBackgroundConfig> = {};
     public allowPlay = true
     private cameraEffect: null | CameraEffect = null;
 
@@ -18,22 +16,22 @@ export class AVQOL {
         new AVQOLSettings("avqolSettings").render(true);
     }
 
-    registerVideoEffect(name: string, videoEffectConfig: VideoEffectConfig) {
-        this.videoEffects[name] = videoEffectConfig;
+    registerVirtualBackground(name: string, virtualBackgroundConfig: VirtualBackgroundConfig) {
+        this.virtualBackgrounds[name] = virtualBackgroundConfig;
     }
 
-    getVideoEffects(): Record<string, string> {
+    getVirtualBackgrounds(): Record<string, string> {
         const videoEffects: Record<string, string> = {
-            [VideoEffect.NONE]: (game as Game).i18n.localize("None"),
+            [VirtualBackground.NONE]: (game as Game).i18n.localize("None"),
         };
-        for (const [name, config] of Object.entries(this.videoEffects)) {
+        for (const [name, config] of Object.entries(this.virtualBackgrounds)) {
             videoEffects[name] = (game as Game).i18n.localize(config.label);
         }
         return videoEffects;
     }
 
-    getVideoEffectRender(name: string): VideoEffectRender | null {
-        return this.videoEffects[name]?.render ?? null;
+    getVirtualBackgroundRender(name: string): VirtualBackgroundRender | null {
+        return this.virtualBackgrounds[name]?.render ?? null;
     }
 
     setCameraEffect(cameraEffect: CameraEffect) {
@@ -44,8 +42,8 @@ export class AVQOL {
         return this.cameraEffect;
     }
 
-    getCurrentVideoEffect(): string {
-        return this.cameraEffect?.videoEffect ?? VideoEffect.NONE;
+    getCurrentVirtualBackground(): string {
+        return this.cameraEffect?.virtualBackground ?? VirtualBackground.NONE;
     }
 }
 

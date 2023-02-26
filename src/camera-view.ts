@@ -1,6 +1,6 @@
-import { VideoEffect } from "./constants";
+import { VirtualBackground } from "./constants";
 import { debug } from "./debug";
-import { applyEffect, getVideoEffect } from "./camera-effects";
+import { applyEffect, getVirtualBackground } from "./camera-effects";
 import {
     avclientIsLivekit,
     avclientIsSimplePeer,
@@ -65,8 +65,8 @@ export const applyCameraEffects = async (): Promise<void> => {
         debug("Camera effects are not supported with this AV client.");
         return;
     }
-    const videoEffect = getVideoEffect();
-    if (videoEffect === VideoEffect.NONE) {
+    const videoEffect = getVirtualBackground();
+    if (videoEffect === VirtualBackground.NONE) {
         debug("Removing camera effects");
         avqol?.getCameraEffect()?.cancel();
         // @ts-ignore

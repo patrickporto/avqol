@@ -1,16 +1,16 @@
 import "@mediapipe/selfie_segmentation";
 import { debug } from "./debug";
-import { CANONICAL_NAME, VideoEffect } from "./constants";
+import { CANONICAL_NAME, VirtualBackground } from "./constants";
 import { getAVQOLAPI } from "./avqol";
 
 const STREAM_FPS = 30;
 
 export type CameraEffect = {
     stream: MediaStream;
-    videoEffect: string;
+    virtualBackground: string;
     cancel: () => void;
 };
-export type VideoEffectRender = (
+export type VirtualBackgroundRender = (
     canvas: HTMLCanvasElement
 ) => (results: any) => void;
 
@@ -24,13 +24,13 @@ export const applyEffect = async (
     canvas: HTMLCanvasElement,
     video: HTMLVideoElement,
     videoEffectContainer: HTMLElement,
-    videoEffect: string
+    virtualBackground: string
 ): Promise<CameraEffect> => {
-    const videoEffectRender = getAVQOLAPI().getVideoEffectRender(videoEffect);
-    if (!videoEffectRender) {
-        throw new Error("No video effect found: " + videoEffect);
+    const virtualBackgroundRender = getAVQOLAPI().getVirtualBackgroundRender(virtualBackground);
+    if (!virtualBackgroundRender) {
+        throw new Error("No video effect found: " + virtualBackground);
     }
-    debug("Applying video effect", videoEffect);
+    debug("Applying video effect", virtualBackground);
     $(videoEffectContainer)
         .addClass("avqol-video-effect--active")
         .addClass("avqol-video-effect--loading");
@@ -46,7 +46,7 @@ export const applyEffect = async (
     });
     selfieSegmentation.onResults((results: any) => {
         flipCanvasHorizontal(canvas);
-        videoEffectRender(canvas)(results)
+        virtualBackgroundRender(canvas)(results)
     });
 
     let videoRefreshAnimationFrame: null | number = null;
@@ -78,33 +78,33 @@ export const applyEffect = async (
 
     return {
         stream: canvas.captureStream(STREAM_FPS),
-        videoEffect,
+        virtualBackground: virtualBackground,
         cancel,
     };
 };
 
 export const registerSettings = () => {
-    (game as Game).settings.register(CANONICAL_NAME, "videoEffects", {
-        name: "AVQOL.VideoEffects",
-        hint: "AVQOL.VideoEffectsHint",
+    (game as Game).settings.register(CANONICAL_NAME, "virtualBackground", {
+        name: "AVQOL.VirtualBackground",
+        hint: "AVQOL.VirtualBackgroundHint",
         scope: "client",
         config: false,
-        default: VideoEffect.NONE,
+        default: VirtualBackground.NONE,
         type: String,
     });
 };
 
-export const getVideoEffect = (): string => {
+export const getVirtualBackground = (): string => {
     return (game as Game).settings.get(
         CANONICAL_NAME,
-        "videoEffects"
+        "virtualBackground"
     ) as string;
 };
 
-export const setVideoEffect = async (videoEffect: VideoEffect) => {
+export const setVirtualBackground = async (videoEffect: VirtualBackground) => {
     await (game as Game).settings.set(
         CANONICAL_NAME,
-        "videoEffects",
+        "virtualBackground",
         videoEffect
     );
 };

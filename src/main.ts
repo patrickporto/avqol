@@ -13,7 +13,7 @@ import registerSettings from "./module-settings";
 import { getRTCWorldSettings } from "./rtcsettings";
 import "./styles.css";
 import "./camera-view";
-import "./video-effects";
+import "./virtual-backgrounds";
 import "./ux";
 
 Hooks.on("init", async () => {

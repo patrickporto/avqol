@@ -3,7 +3,7 @@ export const CANONICAL_NAME = 'avqol';
 export const TEMPLATE_PATH = `modules/${CANONICAL_NAME}/templates`;
 
 
-export enum VideoEffect {
+export enum VirtualBackground {
     NONE = "NONE",
     BLUR_BACKGROUND = "BLUR_BACKGROUND",
 }
