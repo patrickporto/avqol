@@ -21,5 +21,7 @@
     "AVQOL.UserExperienceDisableHideUser": "Disable hide user",
     "AVQOL.UserExperienceDisableHideUserHint": "Disable the hide user control",
     "AVQOL.UserExperienceDisablePopout": "Disable pop out",
-    "AVQOL.UserExperienceDisablePopoutHint": "Disable the pop out control"
+    "AVQOL.UserExperienceDisablePopoutHint": "Disable the pop out control",
+    "AVQOL.UserExperienceDisableBlockUserAV": "Disable block user A/V",
+    "AVQOL.UserExperienceDisableBlockUserAVHint": "Disable the block user A/V control"
 }

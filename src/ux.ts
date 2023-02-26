@@ -31,6 +31,20 @@ export const registerSettings = () => {
             }
         }
     });
+    (game as Game).settings.register(CANONICAL_NAME, "disableBlockUserAV", {
+        name: "AVQOL.UserExperienceDisableBlockUserAV",
+        hint: "AVQOL.UserExperienceDisableBlockUserAVHint",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+        onChange: () => {
+            const cameraViews = ui.webrtc?.element;
+            if (cameraViews) {
+                updateDisableBlockUserAVButtons(cameraViews);
+            }
+        }
+    });
 };
 
 export const getDisableHideUser = (): string => {
@@ -46,6 +60,14 @@ export const getDisablePopout = (): string => {
         "disablePopout"
     ) as string;
 };
+
+export const getDisableBlockUserAV = (): string => {
+    return (game as Game).settings.get(
+        CANONICAL_NAME,
+        "disableBlockUserAV"
+    ) as string;
+};
+
 
 const updateHideUserButton = (html: JQuery<HTMLElement>) => {
     if (getDisableHideUser()) {
@@ -68,10 +90,24 @@ const updateDisablePopoutButton = (html: JQuery<HTMLElement>) => {
 };
 
 
+const updateDisableBlockUserAVButtons = (html: JQuery<HTMLElement>) => {
+    if (getDisableBlockUserAV()) {
+        debug("Disabling block user A/V buttons");
+        html.find('.av-control[data-action="block-video"]').addClass('avqol-control--disabled');
+        html.find('.av-control[data-action="block-audio"]').addClass('avqol-control--disabled');
+    } else {
+        debug("Enabling block user A/V buttons");
+        html.find('.av-control[data-action="block-video"]').removeClass('avqol-control--disabled');
+        html.find('.av-control[data-action="block-audio"]').removeClass('avqol-control--disabled');
+    }
+};
+
+
 Hooks.on(
     "renderCameraViews",
     async (_: any, html: JQuery<HTMLElement>) => {
         updateHideUserButton(html);
         updateDisablePopoutButton(html);
+        updateDisableBlockUserAVButtons(html);
     }
 );
