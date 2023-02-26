@@ -1,18 +1,20 @@
+// @ts-ignore
+import { libWrapper } from "./third-party/libwrapper-shim.js";
 import {
     getAVQOLAPI,
     isForcedOpenSettings,
     registerAVQOLAPI,
     shouldOpenSettings,
 } from "./avqol";
-import { CANONICAL_NAME, VideoEffect } from "./constants";
+import { CANONICAL_NAME } from "./constants";
+
 import { debug } from "./debug";
 import registerSettings from "./module-settings";
 import { getRTCWorldSettings } from "./rtcsettings";
 import "./styles.css";
 import "./camera-view";
 import "./video-effects";
-// @ts-ignore
-import { libWrapper } from "./third-party/libwrapper-shim.js";
+import "./ux";
 
 Hooks.on("init", async () => {
     registerSettings();

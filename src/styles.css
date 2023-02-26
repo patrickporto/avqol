@@ -180,3 +180,7 @@
     z-index: 99;
     backdrop-filter: blur(6px);
 }
+
+.avqol-control--disabled {
+    display: none!important;
+}

@@ -17,5 +17,7 @@
     "AVQOL.OpenSettingsHint": "Open the settings to configure the A/V Quality of Life",
     "AVQOL.OpenSettingsManual": "Manual",
     "AVQOL.OpenSettingsEveryStartup": "Every Startup",
-    "AVQOL.OpenSettingsEveryStartupForced": "Every Startup (Forced)"
+    "AVQOL.OpenSettingsEveryStartupForced": "Every Startup (Forced)",
+    "AVQOL.UserExperienceDisableHideUser": "Disable hide user",
+    "AVQOL.UserExperienceDisableHideUserHint": "Disable the hide user feature, so the user will always be visible"
 }
