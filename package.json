@@ -5,15 +5,22 @@
     "scripts": {
         "build": "vite build",
         "build:config": "iron build",
-        "build:watch": "vite build --watch"
+        "build:watch": "vite build --watch",
+        "postversion": "npm run postversion:update-module-version && npm run postversion:update-module-manifest && npm run postversion:update-module-download",
+        "postversion:update-module-version": "jq '.version = \"'${npm_package_version}'\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json",
+        "postversion:update-module-manifest": "jq '.manifest = \"https://github.com/patrickporto/avqol/releases/download/'${npm_package_version}'/module.json\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json",
+        "postversion:update-module-download": "jq '.download = \"https://github.com/patrickporto/avqol/releases/download/'${npm_package_version}'/avqol.zip\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json"
+    },
+    "config": {
+
     },
     "repository": {
         "type": "git",
         "url": "https://github.com/patrickporto/avqol"
     },
     "devDependencies": {
-        "@darkmoor/iron": "^1.0.1",
         "@league-of-foundry-developers/foundry-vtt-types": "git://github.com/League-of-Foundry-Developers/foundry-vtt-types.git#main",
+        "node-jq": "^2.3.5",
         "tslib": "^2.5.0",
         "typescript": "^4.9.5",
         "vite": "^4.1.2"
