@@ -54,9 +54,9 @@ export const registerAVQOLAPI = () => {
     (game as Game).modules.get(CANONICAL_NAME).api = new AVQOL();
 };
 
-export const getAVQOLAPI = () => {
+export const getAVQOLAPI = (): AVQOL => {
     // @ts-ignore
-    return (game as Game).modules.get(CANONICAL_NAME).api;
+    return (game as Game).modules.get(CANONICAL_NAME).api as AVQOL;
 };
 
 export const registerSettings = () => {

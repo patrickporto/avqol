@@ -1,29 +1,76 @@
-import { CANONICAL_NAME, VideoEffect } from "./constants";
+import { VideoEffect } from "./constants";
 import { debug } from "./debug";
-import { applyEffect, CameraEffect, getVideoEffect } from "./camera-effects";
-import { avclientIsLivekit, avclientIsSimplePeer, cameraEffectsIsSupported, getRTCClient, LivekitAVClient } from "./rtcsettings";
+import { applyEffect, getVideoEffect } from "./camera-effects";
+import {
+    avclientIsLivekit,
+    avclientIsSimplePeer,
+    cameraEffectsIsSupported,
+    getRTCClient,
+    LivekitAVClient,
+    TrackEvent,
+} from "./rtcsettings";
 import { getAVQOLAPI } from "./avqol";
 
+const updateLocalStream = () => {
+    const avqol = getAVQOLAPI();
+    const cameraEffect = avqol.getCameraEffect();
+    if (!cameraEffectsIsSupported() || !cameraEffect) return;
+    if (avclientIsLivekit()) {
+        const rtcClient = getRTCClient() as LivekitAVClient;
+        if (rtcClient._liveKitClient.videoTrack?.sender) {
+            const updateVideoTrack = () => {
+                debug("Updating local stream with camera effects");
+
+                rtcClient._liveKitClient.videoTrack.sender.replaceTrack(
+                    cameraEffect?.stream.getVideoTracks()[0]
+                );
+            };
+            updateVideoTrack();
+            rtcClient._liveKitClient.videoTrack.off(
+                TrackEvent.Unmuted,
+                updateVideoTrack
+            );
+            rtcClient._liveKitClient.videoTrack.on(
+                TrackEvent.Unmuted,
+                updateVideoTrack
+            );
+            return;
+        }
+    }
+    if (avclientIsSimplePeer()) {
+        debug("Updating local stream with camera effects");
+        const rtcClient = getRTCClient() as SimplePeerAVClient;
+        const oldStream = rtcClient.localStream;
+        rtcClient.levelsStream = cameraEffect?.stream.clone();
+        for (let peer of rtcClient.peers.values()) {
+            if (peer.destroyed) continue;
+            if (oldStream) peer.removeStream(oldStream);
+            peer.addStream(cameraEffect?.stream);
+        }
+        return;
+    }
+};
+
 export const applyCameraEffects = async (): Promise<void> => {
-    const avqol = getAVQOLAPI()
+    const avqol = getAVQOLAPI();
     const cameraView = $(`.camera-view[data-user="${(game as Game).userId}"]`);
     if (!cameraView.length) {
-        return
+        return;
     }
     const video = cameraView.find(".user-camera");
     if (!video) {
-        return
+        return;
     }
     if (!cameraEffectsIsSupported()) {
-        debug('Camera effects are not supported with this AV client.')
-        return
+        debug("Camera effects are not supported with this AV client.");
+        return;
     }
     const videoEffect = getVideoEffect();
     if (videoEffect === VideoEffect.NONE) {
         debug("Removing camera effects");
-        avqol?.cameraEffect?.cancel();
+        avqol?.getCameraEffect()?.cancel();
         // @ts-ignore
-        ui.webrtc.render()
+        ui.webrtc.render();
         return;
     }
     let canvas = cameraView.find(
@@ -42,37 +89,13 @@ export const applyCameraEffects = async (): Promise<void> => {
         cameraView[0],
         videoEffect
     );
-    if (avclientIsLivekit()) {
-        debug('Updating local stream with camera effects')
-        const rtcClient = getRTCClient() as LivekitAVClient;
-        if (rtcClient._liveKitClient.videoTrack?.sender) {
-            rtcClient._liveKitClient.videoTrack.sender.replaceTrack(
-                cameraEffect?.stream.getVideoTracks()[0]
-            );
-        }
-        return
-    }
-    if (avclientIsSimplePeer()) {
-        debug('Updating local stream with camera effects')
-        const rtcClient = getRTCClient() as SimplePeerAVClient;
-        const oldStream = rtcClient.localStream
-        rtcClient.levelsStream = cameraEffect?.stream.clone()
-        for ( let peer of rtcClient.peers.values() ) {
-            if (peer.destroyed) continue;
-            if (oldStream) peer.removeStream(oldStream);
-            peer.addStream(cameraEffect?.stream);
-        }
-        return
-    }
-    avqol.setCameraEffect(cameraEffect)
-}
+    avqol.setCameraEffect(cameraEffect);
+    updateLocalStream();
+};
 
-Hooks.on(
-    "renderCameraViews",
-    async () => {
-        const avqol = getAVQOLAPI();
-        if (avqol.allowPlay) {
-            await applyCameraEffects();
-        }
+Hooks.on("renderCameraViews", async () => {
+    const avqol = getAVQOLAPI();
+    if (avqol.allowPlay) {
+        await applyCameraEffects();
     }
-);
+});
