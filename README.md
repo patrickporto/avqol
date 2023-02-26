@@ -14,6 +14,7 @@ AV/ Quality Of Life provides a number of features beyond the built-in Foundry op
 * Video Effects.
 * Camera device preview.
 * Microphone device test.
+* (Optional) Disable A/V controls
 
 ## Current Video Effects
 
