@@ -1,12 +1,11 @@
 import { CANONICAL_NAME, VideoEffect } from "./constants";
 import { debug } from "./debug";
 import { applyEffect, CameraEffect, getVideoEffect } from "./camera-effects";
-import { avclientIsLivekit, cameraEffectsIsSupported, getRTCClient, LivekitAVClient } from "./rtcsettings";
+import { avclientIsLivekit, avclientIsSimplePeer, cameraEffectsIsSupported, getRTCClient, LivekitAVClient } from "./rtcsettings";
 import { getAVQOLAPI } from "./avqol";
 
-let cameraEffect: null | CameraEffect = null;
-
 export const applyCameraEffects = async (): Promise<void> => {
+    const avqol = getAVQOLAPI()
     const cameraView = $(`.camera-view[data-user="${(game as Game).userId}"]`);
     if (!cameraView.length) {
         return
@@ -22,12 +21,11 @@ export const applyCameraEffects = async (): Promise<void> => {
     const videoEffect = getVideoEffect();
     if (videoEffect === VideoEffect.NONE) {
         debug("Removing camera effects");
-        cameraEffect?.cancel();
+        avqol?.cameraEffect?.cancel();
         // @ts-ignore
         ui.webrtc.render()
         return;
     }
-    debug("Applying camera effects");
     let canvas = cameraView.find(
         ".avqol-video-effect__canvas"
     )[0] as HTMLCanvasElement;
@@ -36,17 +34,14 @@ export const applyCameraEffects = async (): Promise<void> => {
         canvas.classList.add("avqol-video-effect__canvas");
         video.after(canvas);
     }
+    debug("Applying camera effects");
     cameraView.find(".video-container").addClass("avqol-video-effect");
-    cameraEffect = await applyEffect(
+    const cameraEffect = await applyEffect(
         canvas,
         video[0] as HTMLVideoElement,
         cameraView[0],
         videoEffect
     );
-    if (!cameraEffect?.stream) {
-        debug("Camera effect stream is not available");
-        return
-    }
     if (avclientIsLivekit()) {
         debug('Updating local stream with camera effects')
         const rtcClient = getRTCClient() as LivekitAVClient;
@@ -57,6 +52,19 @@ export const applyCameraEffects = async (): Promise<void> => {
         }
         return
     }
+    if (avclientIsSimplePeer()) {
+        debug('Updating local stream with camera effects')
+        const rtcClient = getRTCClient() as SimplePeerAVClient;
+        const oldStream = rtcClient.localStream
+        rtcClient.levelsStream = cameraEffect?.stream.clone()
+        for ( let peer of rtcClient.peers.values() ) {
+            if (peer.destroyed) continue;
+            if (oldStream) peer.removeStream(oldStream);
+            peer.addStream(cameraEffect?.stream);
+        }
+        return
+    }
+    avqol.setCameraEffect(cameraEffect)
 }
 
 Hooks.on(

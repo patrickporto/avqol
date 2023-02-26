@@ -7,30 +7,12 @@ const STREAM_FPS = 30;
 
 export type CameraEffect = {
     stream: MediaStream;
+    videoEffect: string;
     cancel: () => void;
 };
 export type VideoEffectRender = (
     canvas: HTMLCanvasElement
 ) => (results: any) => void;
-
-export const applyEffect = async (
-    canvas: HTMLCanvasElement,
-    video: HTMLVideoElement,
-    videoEffectContainer: HTMLElement,
-    videoEffect: string
-): Promise<CameraEffect> => {
-    debug("Applying video effect", videoEffect);
-    const render = getAVQOLAPI().getVideoEffectRender(videoEffect);
-    if (!render) {
-        throw new Error("No video effect found: " + videoEffect);
-    }
-    return await renderCameraEffect(
-        canvas,
-        video,
-        videoEffectContainer,
-        render
-    );
-};
 
 const flipCanvasHorizontal = (canvas: HTMLCanvasElement) => {
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -38,13 +20,17 @@ const flipCanvasHorizontal = (canvas: HTMLCanvasElement) => {
     ctx.translate(-canvas.width, 0);
 };
 
-const renderCameraEffect = async (
+export const applyEffect = async (
     canvas: HTMLCanvasElement,
     video: HTMLVideoElement,
     videoEffectContainer: HTMLElement,
-    videoEffectRender: VideoEffectRender
+    videoEffect: string
 ): Promise<CameraEffect> => {
-    debug("Applying blur background");
+    const videoEffectRender = getAVQOLAPI().getVideoEffectRender(videoEffect);
+    if (!videoEffectRender) {
+        throw new Error("No video effect found: " + videoEffect);
+    }
+    debug("Applying video effect", videoEffect);
     $(videoEffectContainer)
         .addClass("avqol-video-effect--active")
         .addClass("avqol-video-effect--loading");
@@ -92,6 +78,7 @@ const renderCameraEffect = async (
 
     return {
         stream: canvas.captureStream(STREAM_FPS),
+        videoEffect,
         cancel,
     };
 };

@@ -1,6 +1,6 @@
 import { AVQOLSettings } from "./avsettings";
 import { CANONICAL_NAME, OpenSettings, VideoEffect } from "./constants";
-import { VideoEffectRender } from "./camera-effects";
+import { CameraEffect, VideoEffectRender } from "./camera-effects";
 import { debug } from "./debug";
 import { getRTCWorldSettings } from "./rtcsettings";
 
@@ -11,7 +11,8 @@ type VideoEffectConfig = {
 
 export class AVQOL {
     private videoEffects: Record<string, VideoEffectConfig> = {};
-    public static allowPlay = true
+    public allowPlay = true
+    private cameraEffect: null | CameraEffect = null;
 
     openSettings() {
         new AVQOLSettings("avqolSettings").render(true);
@@ -33,6 +34,18 @@ export class AVQOL {
 
     getVideoEffectRender(name: string): VideoEffectRender | null {
         return this.videoEffects[name]?.render ?? null;
+    }
+
+    setCameraEffect(cameraEffect: CameraEffect) {
+        this.cameraEffect = cameraEffect;
+    }
+
+    getCameraEffect(): CameraEffect | null {
+        return this.cameraEffect;
+    }
+
+    getCurrentVideoEffect(): string {
+        return this.cameraEffect?.videoEffect ?? VideoEffect.NONE;
     }
 }
 

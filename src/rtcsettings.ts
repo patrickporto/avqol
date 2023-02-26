@@ -61,5 +61,5 @@ export const avclientIsSimplePeer = (): boolean => {
 }
 
 export const cameraEffectsIsSupported = (): boolean => {
-    return avclientIsLivekit();
+    return avclientIsLivekit() || avclientIsSimplePeer();
 }
