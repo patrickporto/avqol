@@ -26,6 +26,7 @@ export class AVQOLSettings extends FormApplication {
         return mergeObject(super.defaultOptions, {
             classes: ["form", "avqolsettings"],
             popOut: true,
+            submitOnClose: true,
             template: `${TEMPLATE_PATH}/avqolsettings.hbs`,
             id: "av-qol-settings",
             title: (game as Game).i18n.localize("AVQOL.SettingsTitle"),
