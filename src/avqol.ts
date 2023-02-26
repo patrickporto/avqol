@@ -21,13 +21,13 @@ export class AVQOL {
     }
 
     getVirtualBackgrounds(): Record<string, string> {
-        const videoEffects: Record<string, string> = {
+        const virtualBackgrounds: Record<string, string> = {
             [VirtualBackground.NONE]: (game as Game).i18n.localize("None"),
         };
         for (const [name, config] of Object.entries(this.virtualBackgrounds)) {
-            videoEffects[name] = (game as Game).i18n.localize(config.label);
+            virtualBackgrounds[name] = (game as Game).i18n.localize(config.label);
         }
-        return videoEffects;
+        return virtualBackgrounds;
     }
 
     getVirtualBackgroundRender(name: string): VirtualBackgroundRender | null {

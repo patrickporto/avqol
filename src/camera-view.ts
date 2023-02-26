@@ -65,8 +65,8 @@ export const applyCameraEffects = async (): Promise<void> => {
         debug("Camera effects are not supported with this AV client.");
         return;
     }
-    const videoEffect = getVirtualBackground();
-    if (videoEffect === VirtualBackground.NONE) {
+    const virtualBackground = getVirtualBackground();
+    if (virtualBackground === VirtualBackground.NONE) {
         debug("Removing camera effects");
         avqol?.getCameraEffect()?.cancel();
         // @ts-ignore
@@ -87,7 +87,7 @@ export const applyCameraEffects = async (): Promise<void> => {
         canvas,
         video[0] as HTMLVideoElement,
         cameraView[0],
-        videoEffect
+        virtualBackground
     );
     avqol.setCameraEffect(cameraEffect);
     updateLocalStream();

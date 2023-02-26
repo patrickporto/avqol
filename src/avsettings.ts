@@ -69,8 +69,8 @@ export class AVQOLSettings extends FormApplication {
             audioOutputDevices: await this.getAudioOutputs(),
             voiceMode: getRTCClientSettings().voice.mode,
             voiceModes: this.getVoiceModes(),
-            videoEffects: avqol.getVirtualBackgrounds(),
-            videoEffect: getVirtualBackground(),
+            virtualBackgrounds: avqol.getVirtualBackgrounds(),
+            virtualBackground: getVirtualBackground(),
         };
     }
     getVoiceModes() {
@@ -173,7 +173,7 @@ export class AVQOLSettings extends FormApplication {
             await this.changeVideoPreviewSource(html);
         });
         $(html)
-            .find("#videoEffect")
+            .find("#virtualBackground")
             .on("change", async () => {
                 await this.renderVideoPreviewEffects(html);
             });
@@ -195,14 +195,14 @@ export class AVQOLSettings extends FormApplication {
 
     async checkVideoEffectAvailability(html: JQuery<HTMLElement>) {
         if (!cameraEffectsIsSupported()) {
-            $(html).find("#videoEffect").attr("disabled", "disabled").val(VirtualBackground.NONE);
+            $(html).find("#virtualBackground").attr("disabled", "disabled").val(VirtualBackground.NONE);
             return
         }
         if ($(html).find("#videoSrc").val() === "disabled") {
-            $(html).find("#videoEffect").attr("disabled", "disabled").val(VirtualBackground.NONE);
+            $(html).find("#virtualBackground").attr("disabled", "disabled").val(VirtualBackground.NONE);
             return
         }
-        $(html).find("#videoEffect").removeAttr("disabled")
+        $(html).find("#virtualBackground").removeAttr("disabled")
     }
 
     // private async checkPermissions() {
@@ -276,15 +276,15 @@ export class AVQOLSettings extends FormApplication {
     async renderVideoPreviewEffects(html: JQuery<HTMLElement>) {
         const data = await this.getData();
         if (!data.videoDep) return;
-        const selectedVideoEffect = $(html)
-            .find("#videoEffect")
+        const selectedVirtualBackground = $(html)
+            .find("#virtualBackground")
             .val() as VirtualBackground;
         debug("Rendering video preview effects");
         const preview = html.find(
             ".avqol-video-preview__video"
         )[0] as HTMLVideoElement;
 
-        if (selectedVideoEffect === VirtualBackground.NONE) {
+        if (selectedVirtualBackground === VirtualBackground.NONE) {
             this.previewCameraEffects?.cancel();
             return;
         }
@@ -299,7 +299,7 @@ export class AVQOLSettings extends FormApplication {
             previewCanvas,
             preview,
             videoEffectContainer,
-            selectedVideoEffect
+            selectedVirtualBackground
         );
     }
 

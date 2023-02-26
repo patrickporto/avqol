@@ -101,10 +101,10 @@ export const getVirtualBackground = (): string => {
     ) as string;
 };
 
-export const setVirtualBackground = async (videoEffect: VirtualBackground) => {
+export const setVirtualBackground = async (virtualBackground: VirtualBackground) => {
     await (game as Game).settings.set(
         CANONICAL_NAME,
         "virtualBackground",
-        videoEffect
+        virtualBackground
     );
 };
