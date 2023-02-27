@@ -23,7 +23,14 @@ export const renderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>) => 
 
 export default (canvas: HTMLCanvasElement, options: Record<string, any>) => {
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-    const customBackground = new Image;
+    let customBackground: HTMLImageElement | HTMLVideoElement = new Image;
+    customBackground.onerror = () => {
+        customBackground = document.createElement("video") as HTMLVideoElement;
+        customBackground.src = options.customBackground
+        customBackground.loop = true
+        customBackground.play()
+    }
+    customBackground.crossOrigin = "anonymous";
     customBackground.src = options.customBackground
     return (results: any) => {
         ctx.save();
