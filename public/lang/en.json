@@ -14,6 +14,7 @@
     "AVQOL.VirtualBackgroundHint": "Configure camera background",
     "AVQOL.VirtualBackgroundBlurBackground": "Blur Background",
     "AVQOL.VirtualBackgroundCustomBackground": "Custom Background",
+    "AVQOL.VirtualBackgroundCustomBackgroundHint": "Select a custom background",
     "AVQOL.OpenSettings": "Open Settings",
     "AVQOL.OpenSettingsHint": "Open the settings to configure the A/V Quality of Life",
     "AVQOL.OpenSettingsManual": "Manual",

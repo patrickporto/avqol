@@ -1,3 +1,12 @@
+// export const renderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>) => {
+//     virtualBackgroundOptions.append(`
+//         <div class="form-group">
+//             <label for="blurRadius">Blur radius</label>
+//             <input data-virtual-background type="number" class="form-control" id="blurRadius" value="6">
+//         </div>
+//     `);
+// }
+
 export default (canvas: HTMLCanvasElement) => {
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     return (results: any) => {

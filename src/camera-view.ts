@@ -1,6 +1,10 @@
 import { VirtualBackground } from "./constants";
 import { debug } from "./debug";
-import { applyEffect, getVirtualBackground } from "./camera-effects";
+import {
+    applyEffect,
+    getVirtualBackground,
+    getVirtualBackgroundOptions,
+} from "./camera-effects";
 import {
     avclientIsLivekit,
     avclientIsSimplePeer,
@@ -73,6 +77,7 @@ export const applyCameraEffects = async (): Promise<void> => {
         ui.webrtc.render();
         return;
     }
+    const virtualBackgroundOptions = getVirtualBackgroundOptions();
     let canvas = cameraView.find(
         ".avqol-video-effect__canvas"
     )[0] as HTMLCanvasElement;
@@ -81,13 +86,17 @@ export const applyCameraEffects = async (): Promise<void> => {
         canvas.classList.add("avqol-video-effect__canvas");
         video.after(canvas);
     }
-    debug("Applying camera effects");
-    cameraView.find(".video-container").addClass("avqol-video-effect");
+    debug(
+        "Applying camera effects",
+        virtualBackground,
+        virtualBackgroundOptions
+    );
     const cameraEffect = await applyEffect(
         canvas,
         video[0] as HTMLVideoElement,
         cameraView[0],
-        virtualBackground
+        virtualBackground,
+        virtualBackgroundOptions
     );
     avqol.setCameraEffect(cameraEffect);
     updateLocalStream();

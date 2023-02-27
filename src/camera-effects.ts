@@ -10,8 +10,12 @@ export type CameraEffect = {
     virtualBackground: string;
     cancel: () => void;
 };
+
+export type VirtualBackgroundOptions = Record<string, any>
+
 export type VirtualBackgroundRender = (
-    canvas: HTMLCanvasElement
+    canvas: HTMLCanvasElement,
+    options: VirtualBackgroundOptions
 ) => (results: any) => void;
 
 const flipCanvasHorizontal = (canvas: HTMLCanvasElement) => {
@@ -24,7 +28,8 @@ export const applyEffect = async (
     canvas: HTMLCanvasElement,
     video: HTMLVideoElement,
     videoEffectContainer: HTMLElement,
-    virtualBackground: string
+    virtualBackground: string,
+    virtualBackgroundOptions: VirtualBackgroundOptions = {}
 ): Promise<CameraEffect> => {
     const virtualBackgroundRender = getAVQOLAPI().getVirtualBackgroundRender(virtualBackground);
     if (!virtualBackgroundRender) {
@@ -46,7 +51,7 @@ export const applyEffect = async (
     });
     selfieSegmentation.onResults((results: any) => {
         flipCanvasHorizontal(canvas);
-        virtualBackgroundRender(canvas)(results)
+        virtualBackgroundRender(canvas, virtualBackgroundOptions)(results)
     });
 
     let videoRefreshAnimationFrame: null | number = null;
@@ -92,6 +97,12 @@ export const registerSettings = () => {
         default: VirtualBackground.NONE,
         type: String,
     });
+    (game as Game).settings.register(CANONICAL_NAME, "virtualBackgroundOptions", {
+        scope: "client",
+        config: false,
+        default: {},
+        type: Object,
+    });
 };
 
 export const getVirtualBackground = (): string => {
@@ -106,5 +117,20 @@ export const setVirtualBackground = async (virtualBackground: VirtualBackground)
         CANONICAL_NAME,
         "virtualBackground",
         virtualBackground
+    );
+};
+
+export const getVirtualBackgroundOptions = (): Record<string, any> => {
+    return (game as Game).settings.get(
+        CANONICAL_NAME,
+        "virtualBackgroundOptions"
+    ) as Record<string, any>;
+};
+
+export const setVirtualBackgroundOptions = async (virtualBackgroundOptions: Record<string, any>) => {
+    await (game as Game).settings.set(
+        CANONICAL_NAME,
+        "virtualBackgroundOptions",
+        virtualBackgroundOptions
     );
 };

@@ -2,9 +2,12 @@ import { AVQOLSettings } from "./avsettings";
 import { CANONICAL_NAME, OpenSettings, VirtualBackground } from "./constants";
 import { CameraEffect, VirtualBackgroundRender } from "./camera-effects";
 
+type VirtualBackgroundRenderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>) => void;
+
 type VirtualBackgroundConfig = {
     label: string;
     render: VirtualBackgroundRender;
+    renderOptions?: VirtualBackgroundRenderOptions;
 };
 
 export class AVQOL {
@@ -32,6 +35,10 @@ export class AVQOL {
 
     getVirtualBackgroundRender(name: string): VirtualBackgroundRender | null {
         return this.virtualBackgrounds[name]?.render ?? null;
+    }
+
+    getVirtualBackgroundRenderOptions(name: string): VirtualBackgroundRenderOptions | null {
+        return this.virtualBackgrounds[name]?.renderOptions ?? null;
     }
 
     setCameraEffect(cameraEffect: CameraEffect) {

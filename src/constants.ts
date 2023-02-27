@@ -5,7 +5,8 @@ export const TEMPLATE_PATH = `modules/${CANONICAL_NAME}/templates`;
 
 export enum VirtualBackground {
     NONE = "NONE",
-    BLUR_BACKGROUND = "BLUR_BACKGROUND",
+    BLUR = "BLUR",
+    CUSTOM = "CUSTOM",
 }
 
 

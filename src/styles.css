@@ -184,3 +184,7 @@
 .avqol-control--disabled {
     display: none!important;
 }
+
+.avqol-virtual-background-options:empty {
+    display: none;
+}
