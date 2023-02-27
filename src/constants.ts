@@ -15,3 +15,8 @@ export enum OpenSettings {
     EVERY_STARTUP = "EVERY_STARTUP",
     EVERY_STARTUP_FORCED = "EVERY_STARTUP_FORCED",
 }
+
+export enum VoiceButton {
+    STANDARD = "STANDARD",
+    ENHANCED = "ENHANCED",
+}
