@@ -28,7 +28,7 @@ export default (canvas: HTMLCanvasElement, options: Record<string, any>) => {
         customBackground = document.createElement("video") as HTMLVideoElement;
         customBackground.src = options.customBackground
         customBackground.loop = true
-        customBackground.play()
+        customBackground.autoplay = true
     }
     customBackground.crossOrigin = "anonymous";
     customBackground.src = options.customBackground
