@@ -12,7 +12,7 @@ Enhancements for the Audio/Video of Foundry VTT.
 
 AV/ Quality Of Life provides a number of features beyond the built-in Foundry options:
 
-* Force the player setting your devices before connect on A/V (Libwrapper is necessary).
+* Force the player setting your devices before connect on A/V.
 * Custom virtual background.
 * Camera device preview.
 * Microphone device test.
