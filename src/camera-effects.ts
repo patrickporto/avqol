@@ -16,7 +16,7 @@ export type VirtualBackgroundOptions = Record<string, any>
 export type VirtualBackgroundRender = (
     canvas: HTMLCanvasElement,
     options: VirtualBackgroundOptions
-) => (results: any) => void;
+) => Promise<(results: any) => void>;
 
 const flipCanvasHorizontal = (canvas: HTMLCanvasElement) => {
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -26,6 +26,16 @@ const flipCanvasHorizontal = (canvas: HTMLCanvasElement) => {
 
 let videoRefreshAnimationFrame: null | number = null;
 
+// @ts-ignore
+const selfieSegmentation = new SelfieSegmentation({
+    locateFile: (file: any) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
+    },
+});
+selfieSegmentation.setOptions({
+    modelSelection: 1,
+});
+
 export const applyEffect = async (
     canvas: HTMLCanvasElement,
     video: HTMLVideoElement,
@@ -33,33 +43,23 @@ export const applyEffect = async (
     virtualBackground: string,
     virtualBackgroundOptions: VirtualBackgroundOptions = {}
 ): Promise<CameraEffect> => {
-    const virtualBackgroundRender = getAVQOLAPI().getVirtualBackgroundRender(virtualBackground)?.call(null, canvas, virtualBackgroundOptions);
+    const virtualBackgroundRender = await getAVQOLAPI().getVirtualBackgroundRender(virtualBackground)?.call(null, canvas, virtualBackgroundOptions);
     if (!virtualBackgroundRender) {
         throw new Error("No video effect found: " + virtualBackground);
     }
-    debug("Applying video effect", virtualBackground);
+    debug("Applying video effect", virtualBackground, virtualBackgroundOptions);
     $(videoEffectContainer)
         .addClass("avqol-video-effect--active")
         .addClass("avqol-video-effect--loading");
 
-    // @ts-ignore
-    const selfieSegmentation = new SelfieSegmentation({
-        locateFile: (file: any) => {
-            return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
-        },
-    });
-    selfieSegmentation.setOptions({
-        modelSelection: 1,
-    });
-    selfieSegmentation.onResults((results: any) => {
+    if (videoRefreshAnimationFrame) {
+        cancelAnimationFrame(videoRefreshAnimationFrame);
+        selfieSegmentation.reset();
+    }
+    selfieSegmentation.onResults(async (results: any) => {
         flipCanvasHorizontal(canvas);
         virtualBackgroundRender(results)
     });
-
-    if (videoRefreshAnimationFrame) {
-        cancelAnimationFrame(videoRefreshAnimationFrame);
-    }
-
     const refreshVideoEffect = async () => {
         if (video.videoWidth === 0 || video.videoHeight === 0) {
             await new Promise((resolve) => {

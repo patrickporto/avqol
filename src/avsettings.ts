@@ -316,25 +316,6 @@ export class AVQOLSettings extends FormApplication {
                 renderOptions(virtualBackgroundOptionsContainer, getVirtualBackgroundOptions())
             }
         }
-
-        let virtualBackgroundOptions: Record<string, any> = {}
-
-        for (const input of $(html).find('.avqol-virtual-background-options [name]')) {
-            const name = ($(input).attr('name') as string).replace(/^virtualBackgroundOptions\./, '')
-            const value = $(input).val()
-            // remove name
-            virtualBackgroundOptions[name] = value
-            const updateVirtualBackgroundOptions = () => {
-                this.previewCameraEffects?.cancel()
-                this.renderVideoPreviewEffects.call(this, html)
-            }
-            $(input).off("change", updateVirtualBackgroundOptions)
-            $(input).on("change", updateVirtualBackgroundOptions);
-        }
-
-
-        debug('Virtual Background Options', virtualBackgroundOptions)
-
         const previewCanvas = $(html).find(
             ".avqol-video-preview__canvas"
         )[0] as HTMLCanvasElement;
@@ -342,6 +323,34 @@ export class AVQOLSettings extends FormApplication {
         const videoEffectContainer = $(html).find(
             ".avqol-video-preview__container"
         )[0];
+
+        let virtualBackgroundOptions: Record<string, any> = {}
+
+        const updateVirtualBackgroundOptions = async ({target}: Event) => {
+            //@ts-ignore
+            const name = ($(target).attr('name') as string).replace(/^virtualBackgroundOptions\./, '')
+            //@ts-ignore
+            const value = $(target).val()
+            virtualBackgroundOptions[name] = value
+            this.previewCameraEffects?.cancel()
+            this.previewCameraEffects = await applyEffect(
+                previewCanvas,
+                preview,
+                videoEffectContainer,
+                selectedVirtualBackground,
+                virtualBackgroundOptions,
+            );
+        }
+
+        for (const input of $(html).find('.avqol-virtual-background-options [name]')) {
+            const name = ($(input).attr('name') as string).replace(/^virtualBackgroundOptions\./, '')
+            const value = $(input).val()
+            virtualBackgroundOptions[name] = value
+            //@ts-ignore
+            $(input).off("change", updateVirtualBackgroundOptions)
+            $(input).on("change", updateVirtualBackgroundOptions);
+        }
+
         this.previewCameraEffects = await applyEffect(
             previewCanvas,
             preview,

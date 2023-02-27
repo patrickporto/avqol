@@ -1,3 +1,5 @@
+import { debug } from "../debug";
+
 export const renderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>, data: Record<string, any>) => {
     const template = `
     <div class="form-group">
@@ -21,7 +23,7 @@ export const renderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>, dat
     })
 }
 
-export default (canvas: HTMLCanvasElement, options: Record<string, any>) => {
+export default async (canvas: HTMLCanvasElement, options: Record<string, any>) => {
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     let customBackground: HTMLImageElement | HTMLVideoElement = new Image;
     customBackground.onerror = () => {
@@ -32,6 +34,16 @@ export default (canvas: HTMLCanvasElement, options: Record<string, any>) => {
     }
     customBackground.crossOrigin = "anonymous";
     customBackground.src = options.customBackground
+    await new Promise((resolve) => {
+        customBackground.onload = resolve
+        customBackground.onerror = () => {
+            customBackground = document.createElement("video") as HTMLVideoElement;
+            customBackground.src = options.customBackground
+            customBackground.loop = true
+            customBackground.autoplay = true
+            resolve(null)
+        }
+    })
     return (results: any) => {
         ctx.save();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
