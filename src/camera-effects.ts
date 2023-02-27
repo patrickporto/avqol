@@ -24,6 +24,8 @@ const flipCanvasHorizontal = (canvas: HTMLCanvasElement) => {
     ctx.translate(-canvas.width, 0);
 };
 
+let videoRefreshAnimationFrame: null | number = null;
+
 export const applyEffect = async (
     canvas: HTMLCanvasElement,
     video: HTMLVideoElement,
@@ -54,14 +56,16 @@ export const applyEffect = async (
         virtualBackgroundRender(results)
     });
 
-    let videoRefreshAnimationFrame: null | number = null;
+    if (videoRefreshAnimationFrame) {
+        cancelAnimationFrame(videoRefreshAnimationFrame);
+    }
 
     const refreshVideoEffect = async () => {
         if (video.videoWidth === 0 || video.videoHeight === 0) {
             await new Promise((resolve) => {
                 video.addEventListener("loadedmetadata", resolve);
             });
-            video.play();
+            video?.play();
         }
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
