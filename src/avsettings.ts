@@ -308,12 +308,15 @@ export class AVQOLSettings extends FormApplication {
             virtualBackgroundOptionsContainer.empty()
             const renderOptions = avqol.getVirtualBackgroundRenderOptions(selectedVirtualBackground)
             if (renderOptions) {
+                const currentVirtualBackgroundOptions = {
+                    ...avqol.getVirtualBackgroundDefaultOptions(selectedVirtualBackground),
+                    ...getVirtualBackgroundOptions(),
+                }
                 const virtualBackgroundOptions: Record<string, any> = {}
-                const defaultVirtualBackgroundOptions = avqol.getVirtualBackgroundDefaultOptions(selectedVirtualBackground)
-                for (const [key, value] of Object.entries({...defaultVirtualBackgroundOptions, ...getVirtualBackgroundOptions()})) {
+                for (const [key, value] of Object.entries(currentVirtualBackgroundOptions)) {
                     virtualBackgroundOptions[`virtualBackgroundOptions.${key}`] = value
                 }
-                renderOptions(virtualBackgroundOptionsContainer, getVirtualBackgroundOptions())
+                renderOptions(virtualBackgroundOptionsContainer, virtualBackgroundOptions)
             }
         }
         const previewCanvas = $(html).find(

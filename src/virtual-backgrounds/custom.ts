@@ -5,7 +5,7 @@ export const renderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>, dat
     <div class="form-group">
         <label for="customBackground">{{localize 'AVQOL.VirtualBackgroundCustomBackground'}}</label>
         <div class="form-fields">
-            <input type="text" id="customBackground" name="virtualBackgroundOptions.customBackground">
+            <input type="text" id="customBackground" name="virtualBackgroundOptions.customBackground" value="{{'virtualBackgroundOptions.customBackground'}}">
             {{filePicker type="imagevideo" target="customBackground"}}
         </div>
         <p class="notes">{{localize 'AVQOL.VirtualBackgroundCustomBackgroundHint'}}</p>
