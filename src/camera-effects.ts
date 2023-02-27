@@ -31,7 +31,7 @@ export const applyEffect = async (
     virtualBackground: string,
     virtualBackgroundOptions: VirtualBackgroundOptions = {}
 ): Promise<CameraEffect> => {
-    const virtualBackgroundRender = getAVQOLAPI().getVirtualBackgroundRender(virtualBackground);
+    const virtualBackgroundRender = getAVQOLAPI().getVirtualBackgroundRender(virtualBackground)?.call(null, canvas, virtualBackgroundOptions);
     if (!virtualBackgroundRender) {
         throw new Error("No video effect found: " + virtualBackground);
     }
@@ -51,7 +51,7 @@ export const applyEffect = async (
     });
     selfieSegmentation.onResults((results: any) => {
         flipCanvasHorizontal(canvas);
-        virtualBackgroundRender(canvas, virtualBackgroundOptions)(results)
+        virtualBackgroundRender(results)
     });
 
     let videoRefreshAnimationFrame: null | number = null;
