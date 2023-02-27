@@ -13,6 +13,7 @@
     "AVQOL.VirtualBackground": "Virtual Background",
     "AVQOL.VirtualBackgroundHint": "Configure camera background",
     "AVQOL.VirtualBackgroundBlurBackground": "Blur Background",
+    "AVQOL.VirtualBackgroundBlurBackgroundRadius": "Blur Radius",
     "AVQOL.VirtualBackgroundCustomBackground": "Custom Background",
     "AVQOL.VirtualBackgroundCustomBackgroundHint": "Select a custom background",
     "AVQOL.OpenSettings": "Open Settings",

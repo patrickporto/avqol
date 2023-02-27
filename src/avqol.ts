@@ -2,24 +2,31 @@ import { AVQOLSettings } from "./avsettings";
 import { CANONICAL_NAME, OpenSettings, VirtualBackground } from "./constants";
 import { CameraEffect, VirtualBackgroundRender } from "./camera-effects";
 
-type VirtualBackgroundRenderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>) => void;
+type VirtualBackgroundRenderOptions = (
+    virtualBackgroundOptionsElement: JQuery<HTMLElement>,
+    data: Record<string, any>
+) => void;
 
 type VirtualBackgroundConfig = {
     label: string;
+    default?: Record<string, any>;
     render: VirtualBackgroundRender;
     renderOptions?: VirtualBackgroundRenderOptions;
 };
 
 export class AVQOL {
     private virtualBackgrounds: Record<string, VirtualBackgroundConfig> = {};
-    public allowPlay = true
+    public allowPlay = true;
     private cameraEffect: null | CameraEffect = null;
 
     openSettings() {
         new AVQOLSettings("avqolSettings").render(true);
     }
 
-    registerVirtualBackground(name: string, virtualBackgroundConfig: VirtualBackgroundConfig) {
+    registerVirtualBackground(
+        name: string,
+        virtualBackgroundConfig: VirtualBackgroundConfig
+    ) {
         this.virtualBackgrounds[name] = virtualBackgroundConfig;
     }
 
@@ -28,16 +35,24 @@ export class AVQOL {
             [VirtualBackground.NONE]: (game as Game).i18n.localize("None"),
         };
         for (const [name, config] of Object.entries(this.virtualBackgrounds)) {
-            virtualBackgrounds[name] = (game as Game).i18n.localize(config.label);
+            virtualBackgrounds[name] = (game as Game).i18n.localize(
+                config.label
+            );
         }
         return virtualBackgrounds;
+    }
+
+    getVirtualBackgroundDefaultOptions(name: string): Record<string, any> {
+        return this.virtualBackgrounds[name]?.default ?? {};
     }
 
     getVirtualBackgroundRender(name: string): VirtualBackgroundRender | null {
         return this.virtualBackgrounds[name]?.render ?? null;
     }
 
-    getVirtualBackgroundRenderOptions(name: string): VirtualBackgroundRenderOptions | null {
+    getVirtualBackgroundRenderOptions(
+        name: string
+    ): VirtualBackgroundRenderOptions | null {
         return this.virtualBackgrounds[name]?.renderOptions ?? null;
     }
 
@@ -102,9 +117,17 @@ export const shouldOpenSettings = () => {
     return [
         OpenSettings.EVERY_STARTUP,
         OpenSettings.EVERY_STARTUP_FORCED,
-    ].includes((game as Game).settings.get(CANONICAL_NAME, "openSettings") as OpenSettings);
+    ].includes(
+        (game as Game).settings.get(
+            CANONICAL_NAME,
+            "openSettings"
+        ) as OpenSettings
+    );
 };
 
 export const isForcedOpenSettings = () => {
-    return (game as Game).settings.get(CANONICAL_NAME, "openSettings") === OpenSettings.EVERY_STARTUP_FORCED;
+    return (
+        (game as Game).settings.get(CANONICAL_NAME, "openSettings") ===
+        OpenSettings.EVERY_STARTUP_FORCED
+    );
 };

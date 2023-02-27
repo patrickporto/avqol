@@ -293,11 +293,11 @@ export class AVQOLSettings extends FormApplication {
         const preview = html.find(
             ".avqol-video-preview__video"
         )[0] as HTMLVideoElement;
-        const virtualBackgroundOptionsContaienr = $(html).find('.avqol-virtual-background-options')
+        const virtualBackgroundOptionsContainer = $(html).find('.avqol-virtual-background-options')
 
         if (selectedVirtualBackground === VirtualBackground.NONE) {
             this.previewCameraEffects?.cancel();
-            virtualBackgroundOptionsContaienr.empty()
+            virtualBackgroundOptionsContainer.empty()
             return;
         }
 
@@ -305,14 +305,15 @@ export class AVQOLSettings extends FormApplication {
         const previousVirtualBackground = this.previewCameraEffects?.virtualBackground;
 
         if (selectedVirtualBackground !== previousVirtualBackground) {
-            virtualBackgroundOptionsContaienr.empty()
+            virtualBackgroundOptionsContainer.empty()
             const renderOptions = avqol.getVirtualBackgroundRenderOptions(selectedVirtualBackground)
             if (renderOptions) {
-                renderOptions(virtualBackgroundOptionsContaienr)
-            }
-            const virtualBackgroundOptions = getVirtualBackgroundOptions()
-            for (const [key, value] of Object.entries(virtualBackgroundOptions)) {
-                $(html).find(`[name="virtualBackgroundOptions.${key}"]`).val(value)
+                const virtualBackgroundOptions: Record<string, any> = {}
+                const defaultVirtualBackgroundOptions = avqol.getVirtualBackgroundDefaultOptions(selectedVirtualBackground)
+                for (const [key, value] of Object.entries({...defaultVirtualBackgroundOptions, ...getVirtualBackgroundOptions()})) {
+                    virtualBackgroundOptions[`virtualBackgroundOptions.${key}`] = value
+                }
+                renderOptions(virtualBackgroundOptionsContainer, getVirtualBackgroundOptions())
             }
         }
 

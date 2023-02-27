@@ -1,4 +1,4 @@
-export const renderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>) => {
+export const renderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>, data: Record<string, any>) => {
     const template = `
     <div class="form-group">
         <label for="customBackground">{{localize 'AVQOL.VirtualBackgroundCustomBackground'}}</label>
@@ -8,7 +8,7 @@ export const renderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>) => 
         </div>
         <p class="notes">{{localize 'AVQOL.VirtualBackgroundCustomBackgroundHint'}}</p>
     </div>`
-    virtualBackgroundOptions.append(Handlebars.compile(template)({}));
+    virtualBackgroundOptions.append(Handlebars.compile(template)(data));
 
     const customBackground = virtualBackgroundOptions.find("#customBackground")
     virtualBackgroundOptions.find("[data-target='customBackground']").on("click", async (event) => {
