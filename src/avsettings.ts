@@ -23,6 +23,7 @@ const DEFAULT_AVATAR = "icons/svg/mystery-man.svg";
 export class AVQOLSettings extends FormApplication {
     private previewCameraEffects: CameraEffect | null = null;
     private animationFrames: Record<string, number | null> = {};
+    private hearMyselfAudio: HTMLAudioElement | null = null;
 
     static get defaultOptions() {
         return mergeObject(super.defaultOptions, {
@@ -188,6 +189,11 @@ export class AVQOLSettings extends FormApplication {
         await this.changeVideoPreviewSource(html);
         $(html)
             .find("#audioSrc")
+            .on("change", async () => {
+                await this.renderAudioSourcePreview(html);
+            });
+        $(html)
+            .find("#hearMyself")
             .on("change", async () => {
                 await this.renderAudioSourcePreview(html);
             });
@@ -396,6 +402,22 @@ export class AVQOLSettings extends FormApplication {
             stream,
             $(html).find("#audioSrcPids")
         );
+        await this.hearMyself(html, stream);
+    }
+
+    async hearMyself(html: JQuery<HTMLElement>, stream: MediaStream) {
+        const hearMyself = $(html).find("#hearMyself").is(":checked");
+        debug("Hear myself", hearMyself);
+        if (!hearMyself) {
+            if (this.hearMyselfAudio) {
+                this.hearMyselfAudio.srcObject = null;
+            }
+            return;
+        }
+        this.hearMyselfAudio = document.createElement('audio');
+        this.hearMyselfAudio.controls = true;
+        this.hearMyselfAudio.autoplay = true;
+        this.hearMyselfAudio.srcObject = stream;
     }
 
     private renderAudioPids(

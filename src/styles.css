@@ -102,6 +102,17 @@
     background-color: #69ce2b;
 }
 
+.avqol-pids + .form-group {
+    margin-left: 10px;
+}
+
+.avqol-mic-test {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
 .avqol-video-effect:not(.avqol-video-effect--active) .avqol-video-preview__canvas {
     display: none;
 }
