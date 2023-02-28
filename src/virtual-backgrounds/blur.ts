@@ -11,7 +11,7 @@ export const renderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>, dat
     virtualBackgroundOptions.append(Handlebars.compile(template)(data));
 }
 
-export default (canvas: HTMLCanvasElement, options: Record<string, any>) => {
+export default async (canvas: HTMLCanvasElement, options: Record<string, any>) => {
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     const blur = `blur(${options.blurRadius}px)`
     return (results: any) => {
