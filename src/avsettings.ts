@@ -408,10 +408,11 @@ export class AVQOLSettings extends FormApplication {
     async hearMyself(html: JQuery<HTMLElement>, stream: MediaStream) {
         const hearMyself = $(html).find("#hearMyself").is(":checked");
         debug("Hear myself", hearMyself);
-        if (!hearMyself) {
             if (this.hearMyselfAudio) {
                 this.hearMyselfAudio.srcObject = null;
+            this.hearMyselfAudio.remove();
             }
+        if (!hearMyself) {
             return;
         }
         this.hearMyselfAudio = document.createElement('audio');
