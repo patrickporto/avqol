@@ -27,7 +27,3 @@ AV/ Quality Of Life provides a number of features beyond the built-in Foundry op
 
 * Blur background
 * Custom image/video
-
-## Changes
-
-See [CHANGELOG](/CHANGELOG.md)
