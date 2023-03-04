@@ -203,14 +203,20 @@ export class AVQOLSettings extends FormApplication {
 
     async checkVideoEffectAvailability(html: JQuery<HTMLElement>) {
         if (!cameraEffectsIsSupported()) {
-            $(html).find("#virtualBackground").attr("disabled", "disabled").val(VirtualBackground.NONE);
-            return
+            $(html)
+                .find("#virtualBackground")
+                .attr("disabled", "disabled")
+                .val(VirtualBackground.NONE);
+            return;
         }
         if ($(html).find("#videoSrc").val() === "disabled") {
-            $(html).find("#virtualBackground").attr("disabled", "disabled").val(VirtualBackground.NONE);
-            return
+            $(html)
+                .find("#virtualBackground")
+                .attr("disabled", "disabled")
+                .val(VirtualBackground.NONE);
+            return;
         }
-        $(html).find("#virtualBackground").removeAttr("disabled")
+        $(html).find("#virtualBackground").removeAttr("disabled");
     }
 
     // private async checkPermissions() {
@@ -225,6 +231,7 @@ export class AVQOLSettings extends FormApplication {
 
     async _updateObject(event: Event, formData: any) {
         debug("Updating RTC Client settings", formData);
+        this.disableHearMyself()
         const avqol = getAVQOLAPI();
         if (!avqol.allowPlay) {
             avqol.allowPlay = true;
@@ -241,16 +248,18 @@ export class AVQOLSettings extends FormApplication {
         });
         if (formData.videoSrc === "disabled") {
             await setVirtualBackground(VirtualBackground.NONE);
-            await setVirtualBackgroundOptions({})
+            await setVirtualBackgroundOptions({});
         } else {
             await setVirtualBackground(formData.virtualBackground);
-            let virtualBackgroundOptions: Record<string, any> = {}
+            let virtualBackgroundOptions: Record<string, any> = {};
             for (const [key, value] of Object.entries(formData)) {
                 if (key.startsWith("virtualBackgroundOptions")) {
-                    virtualBackgroundOptions[key.replace(/^virtualBackgroundOptions\./, '')] = value
+                    virtualBackgroundOptions[
+                        key.replace(/^virtualBackgroundOptions\./, "")
+                    ] = value;
                 }
             }
-            await setVirtualBackgroundOptions(virtualBackgroundOptions)
+            await setVirtualBackgroundOptions(virtualBackgroundOptions);
         }
         this.previewCameraEffects?.cancel();
         applyCameraEffects();
@@ -299,30 +308,44 @@ export class AVQOLSettings extends FormApplication {
         const preview = html.find(
             ".avqol-video-preview__video"
         )[0] as HTMLVideoElement;
-        const virtualBackgroundOptionsContainer = $(html).find('.avqol-virtual-background-options')
+        const virtualBackgroundOptionsContainer = $(html).find(
+            ".avqol-virtual-background-options"
+        );
 
         if (selectedVirtualBackground === VirtualBackground.NONE) {
             this.previewCameraEffects?.cancel();
-            virtualBackgroundOptionsContainer.empty()
+            virtualBackgroundOptionsContainer.empty();
             return;
         }
 
         const avqol = getAVQOLAPI();
-        const previousVirtualBackground = this.previewCameraEffects?.virtualBackground;
+        const previousVirtualBackground =
+            this.previewCameraEffects?.virtualBackground;
 
         if (selectedVirtualBackground !== previousVirtualBackground) {
-            virtualBackgroundOptionsContainer.empty()
-            const renderOptions = avqol.getVirtualBackgroundRenderOptions(selectedVirtualBackground)
+            virtualBackgroundOptionsContainer.empty();
+            const renderOptions = avqol.getVirtualBackgroundRenderOptions(
+                selectedVirtualBackground
+            );
             if (renderOptions) {
                 const currentVirtualBackgroundOptions = {
-                    ...avqol.getVirtualBackgroundDefaultOptions(selectedVirtualBackground),
+                    ...avqol.getVirtualBackgroundDefaultOptions(
+                        selectedVirtualBackground
+                    ),
                     ...getVirtualBackgroundOptions(),
+                };
+                const virtualBackgroundOptions: Record<string, any> = {};
+                for (const [key, value] of Object.entries(
+                    currentVirtualBackgroundOptions
+                )) {
+                    virtualBackgroundOptions[
+                        `virtualBackgroundOptions.${key}`
+                    ] = value;
                 }
-                const virtualBackgroundOptions: Record<string, any> = {}
-                for (const [key, value] of Object.entries(currentVirtualBackgroundOptions)) {
-                    virtualBackgroundOptions[`virtualBackgroundOptions.${key}`] = value
-                }
-                renderOptions(virtualBackgroundOptionsContainer, virtualBackgroundOptions)
+                renderOptions(
+                    virtualBackgroundOptionsContainer,
+                    virtualBackgroundOptions
+                );
             }
         }
         const previewCanvas = $(html).find(
@@ -333,30 +356,38 @@ export class AVQOLSettings extends FormApplication {
             ".avqol-video-preview__container"
         )[0];
 
-        let virtualBackgroundOptions: Record<string, any> = {}
+        let virtualBackgroundOptions: Record<string, any> = {};
 
-        const updateVirtualBackgroundOptions = async ({target}: Event) => {
+        const updateVirtualBackgroundOptions = async ({ target }: Event) => {
             //@ts-ignore
-            const name = ($(target).attr('name') as string).replace(/^virtualBackgroundOptions\./, '')
+            const name = ($(target).attr("name") as string).replace(
+                /^virtualBackgroundOptions\./,
+                ""
+            );
             //@ts-ignore
-            const value = $(target).val()
-            virtualBackgroundOptions[name] = value
-            this.previewCameraEffects?.cancel()
+            const value = $(target).val();
+            virtualBackgroundOptions[name] = value;
+            this.previewCameraEffects?.cancel();
             this.previewCameraEffects = await applyEffect(
                 previewCanvas,
                 preview,
                 videoEffectContainer,
                 selectedVirtualBackground,
-                virtualBackgroundOptions,
+                virtualBackgroundOptions
             );
-        }
+        };
 
-        for (const input of $(html).find('.avqol-virtual-background-options [name]')) {
-            const name = ($(input).attr('name') as string).replace(/^virtualBackgroundOptions\./, '')
-            const value = $(input).val()
-            virtualBackgroundOptions[name] = value
+        for (const input of $(html).find(
+            ".avqol-virtual-background-options [name]"
+        )) {
+            const name = ($(input).attr("name") as string).replace(
+                /^virtualBackgroundOptions\./,
+                ""
+            );
+            const value = $(input).val();
+            virtualBackgroundOptions[name] = value;
             //@ts-ignore
-            $(input).off("change", updateVirtualBackgroundOptions)
+            $(input).off("change", updateVirtualBackgroundOptions);
             $(input).on("change", updateVirtualBackgroundOptions);
         }
 
@@ -365,7 +396,7 @@ export class AVQOLSettings extends FormApplication {
             preview,
             videoEffectContainer,
             selectedVirtualBackground,
-            virtualBackgroundOptions,
+            virtualBackgroundOptions
         );
     }
 
@@ -402,23 +433,30 @@ export class AVQOLSettings extends FormApplication {
             stream,
             $(html).find("#audioSrcPids")
         );
-        await this.hearMyself(html, stream);
+        await this.enableHearMyself(html, stream);
     }
 
-    async hearMyself(html: JQuery<HTMLElement>, stream: MediaStream) {
+    async enableHearMyself(html: JQuery<HTMLElement>, stream: MediaStream) {
         const hearMyself = $(html).find("#hearMyself").is(":checked");
         debug("Hear myself", hearMyself);
-            if (this.hearMyselfAudio) {
-                this.hearMyselfAudio.srcObject = null;
-            this.hearMyselfAudio.remove();
-            }
+        if (this.hearMyselfAudio) {
+            this.disableHearMyself();
+        }
         if (!hearMyself) {
             return;
         }
-        this.hearMyselfAudio = document.createElement('audio');
+        this.hearMyselfAudio = document.createElement("audio");
         this.hearMyselfAudio.controls = true;
         this.hearMyselfAudio.autoplay = true;
         this.hearMyselfAudio.srcObject = stream;
+    }
+
+    private disableHearMyself() {
+        if (!this.hearMyselfAudio) {
+            return
+        }
+        this.hearMyselfAudio.srcObject = null;
+        this.hearMyselfAudio.remove();
     }
 
     private renderAudioPids(
