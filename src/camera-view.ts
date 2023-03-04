@@ -1,3 +1,4 @@
+import { createAVClientWrapper } from "./avclient";
 import { VirtualBackground } from "./constants";
 import { debug } from "./debug";
 import {
@@ -6,54 +7,9 @@ import {
     getVirtualBackgroundOptions,
 } from "./camera-effects";
 import {
-    avclientIsLivekit,
-    avclientIsSimplePeer,
     cameraEffectsIsSupported,
-    getRTCClient,
-    LivekitAVClient,
-    TrackEvent,
 } from "./rtcsettings";
 import { getAVQOLAPI } from "./avqol";
-
-const updateLocalStream = () => {
-    const avqol = getAVQOLAPI();
-    const cameraEffect = avqol.getCameraEffect();
-    if (!cameraEffectsIsSupported() || !cameraEffect) return;
-    if (avclientIsLivekit()) {
-        const rtcClient = getRTCClient() as LivekitAVClient;
-        if (rtcClient._liveKitClient.videoTrack?.sender) {
-            const updateVideoTrack = () => {
-                debug("Updating local stream with camera effects");
-
-                rtcClient._liveKitClient.videoTrack.sender.replaceTrack(
-                    cameraEffect?.stream.getVideoTracks()[0]
-                );
-            };
-            updateVideoTrack();
-            rtcClient._liveKitClient.videoTrack.off(
-                TrackEvent.Unmuted,
-                updateVideoTrack
-            );
-            rtcClient._liveKitClient.videoTrack.on(
-                TrackEvent.Unmuted,
-                updateVideoTrack
-            );
-            return;
-        }
-    }
-    if (avclientIsSimplePeer()) {
-        debug("Updating local stream with camera effects");
-        const rtcClient = getRTCClient() as SimplePeerAVClient;
-        const oldStream = rtcClient.localStream;
-        rtcClient.levelsStream = cameraEffect?.stream.clone();
-        for (let peer of rtcClient.peers.values()) {
-            if (peer.destroyed) continue;
-            if (oldStream) peer.removeStream(oldStream);
-            peer.addStream(cameraEffect?.stream);
-        }
-        return;
-    }
-};
 
 export const applyCameraEffects = async (): Promise<void> => {
     const avqol = getAVQOLAPI();
@@ -99,7 +55,8 @@ export const applyCameraEffects = async (): Promise<void> => {
         virtualBackgroundOptions
     );
     avqol.setCameraEffect(cameraEffect);
-    updateLocalStream();
+    const avClientWrapper = createAVClientWrapper()
+    avClientWrapper.updateLocalStream(cameraEffect);
 };
 
 Hooks.on("renderCameraViews", async () => {
