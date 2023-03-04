@@ -69,6 +69,7 @@
     height: 100%;
     border: none;
     border-radius: var(--av-border-radius);
+    object-fit: cover;
 }
 
 .avqol-video-preview__video {
