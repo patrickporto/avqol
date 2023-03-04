@@ -111,6 +111,22 @@ export const registerSettings = () => {
         default: OpenSettings.EVERY_STARTUP,
         choices: openSettingsOptions,
     });
+
+    (game as Game).settings.register(CANONICAL_NAME, "defaultVirtualBackgroundPath", {
+        name: (game as Game).i18n.localize("AVQOL.DefaultVirtualBackgroundPath"),
+        hint: (game as Game).i18n.localize("AVQOL.DefaultVirtualBackgroundPathHint"),
+        scope: "world",
+        requiresReload: false,
+        config: true,
+        type: String,
+        default: 'data',
+        // @ts-ignore
+        filePicker: 'folder',
+    });
+};
+
+export const getDefaultVirtualBackgroundPath = (): string => {
+    return (game as Game).settings.get(CANONICAL_NAME, "defaultVirtualBackgroundPath") as string;
 };
 
 export const shouldOpenSettings = () => {

@@ -1,4 +1,4 @@
-import { debug } from "../debug";
+import { getDefaultVirtualBackgroundPath } from "../avqol";
 
 export const renderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>, data: Record<string, any>) => {
     const template = `
@@ -19,7 +19,7 @@ export const renderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>, dat
             type: "imagevideo",
             field: customBackground[0],
         })
-        return filePicker.browse('data')
+        return filePicker.browse(getDefaultVirtualBackgroundPath())
     })
 }
 

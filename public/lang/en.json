@@ -11,6 +11,8 @@
     "AVQOL.MenuConfigutationHint": "Configure settings to the integrated A/V with quality of life",
     "AVQOL.MenuConfigutationLabel": "Configure Audio/Video",
     "AVQOL.HearMyself": "Hear Myself",
+    "AVQOL.DefaultVirtualBackgroundPath": "Default Virtual Background Path",
+    "AVQOL.DefaultVirtualBackgroundPathHint": "Default path to the virtual background image/video",
     "AVQOL.VirtualBackground": "Virtual Background",
     "AVQOL.VirtualBackgroundHint": "Configure camera background",
     "AVQOL.VirtualBackgroundBlurBackground": "Blur Background",
