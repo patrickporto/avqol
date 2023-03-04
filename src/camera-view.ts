@@ -26,7 +26,9 @@ export const applyCameraEffects = async (): Promise<void> => {
         return;
     }
     const virtualBackground = getVirtualBackground();
-    if (virtualBackground === VirtualBackground.NONE) {
+    const webrtc = (game as Game).webrtc as AVMaster;
+    const userSettings = webrtc.settings.getUser((game as Game).userId as string);
+    if (virtualBackground === VirtualBackground.NONE || userSettings?.hidden) {
         debug("Removing camera effects");
         avqol?.getCameraEffect()?.cancel();
         // @ts-ignore
