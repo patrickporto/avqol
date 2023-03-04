@@ -258,3 +258,30 @@
 .avqol-pushtotalk.avqol-pushtotalk--disabled .avqol-pushtotalk__muted-icon {
     display: block;
 }
+
+/* toggle fullscreen */
+.control-bar {
+    flex-wrap: nowrap;
+}
+
+.avqol-fullscreen {
+    width: 100vw!important;
+    height: 100vh!important;
+}
+
+.avqol-fullscreen .user-controls {
+    display: none;
+}
+
+#camera-views.avqol-fullscreen {
+    --av-width: 450px;
+}
+
+.avqol-fullscreen .camera-container {
+    margin: 20px;
+}
+
+.avqol-fullscreen .camera-grid {
+    flex-wrap: wrap;
+    justify-content: space-around;
+}

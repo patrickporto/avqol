@@ -223,10 +223,33 @@ const disableToggleAudioButton = (html: JQuery<HTMLElement>) => {
     html.find(`.camera-view[data-user=${(game as Game).userId}] .notification-bar .status-muted`).addClass('hidden');
 }
 
+const renderToggleFullScreen = async (html: JQuery<HTMLElement>) => {
+    const controlBar = html.find('.user-controls .control-bar');
+    let toggleFullScreen = controlBar.find(".av-control[data-action='toggle-fullscreen']");
+    debug("Rendering full screen av control");
+    const template = await getTemplate(`${TEMPLATE_PATH}/avcontrol-toggle-fullscreen.hbs`);
+    const avcontrol = $(template({
+        fullscreen: toggleFullScreen?.hasClass("avqol-control--active"),
+    }))
+    debug(toggleFullScreen?.hasClass("avqol-control--active"))
+    if (toggleFullScreen.length > 0) {
+        toggleFullScreen.replaceWith(avcontrol);
+    } else {
+        controlBar.append(avcontrol);
+    }
+    avcontrol.off("click");
+    avcontrol.on("click", async () => {
+        avcontrol.toggleClass("avqol-control--active");
+        $(html).toggleClass("avqol-fullscreen");
+        await renderToggleFullScreen(html);
+    });
+}
+
 Hooks.on("renderCameraViews", async (_: any, html: JQuery<HTMLElement>) => {
     updateHideUserButton(html);
     updateDisablePopoutButton(html);
     updateDisableBlockUserAVButtons(html);
+    renderToggleFullScreen(html);
     if (getVoiceButton() === VoiceButton.ENHANCED) {
         disableToggleAudioButton(html);
     }

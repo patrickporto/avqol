@@ -13,6 +13,8 @@
     "AVQOL.HearMyself": "Hear Myself",
     "AVQOL.DefaultVirtualBackgroundPath": "Default Virtual Background Path",
     "AVQOL.DefaultVirtualBackgroundPathHint": "Default path to the virtual background image/video",
+    "AVQOL.AVControlToggleFullScreenTooltipExpand": "Expand to full screen",
+    "AVQOL.AVControlToggleFullScreenTooltipShrink": "Shrink to normal size",
     "AVQOL.VirtualBackground": "Virtual Background",
     "AVQOL.VirtualBackgroundHint": "Configure camera background",
     "AVQOL.VirtualBackgroundBlurBackground": "Blur Background",
