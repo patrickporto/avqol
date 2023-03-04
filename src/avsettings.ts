@@ -39,20 +39,15 @@ export class AVQOLSettings extends FormApplication {
     }
 
     async getData() {
-        const microphoneStatus = await navigator.permissions.query({
-            // @ts-ignore
-            name: "microphone",
-        });
-        const cameraStatus = await navigator.permissions.query({
-            // @ts-ignore
-            name: "camera",
-        });
+        const microphoneStatus = await this.getMicrophoneStatus();
+        const cameraStatus = await this.getCameraStatus();
         const rtcWorldSettings = getRTCWorldSettings();
         const avqol = getAVQOLAPI();
+        debug("AVQOLSettings.getData", microphoneStatus, cameraStatus)
         return {
             avatar: (game as Game).user?.avatar ?? DEFAULT_AVATAR,
-            microphoneStatus: microphoneStatus.state,
-            cameraStatus: cameraStatus.state,
+            microphoneStatus: microphoneStatus,
+            cameraStatus: cameraStatus,
             audioDep: [
                 AVSettings.AV_MODES.AUDIO,
                 AVSettings.AV_MODES.AUDIO_VIDEO,
@@ -158,23 +153,8 @@ export class AVQOLSettings extends FormApplication {
 
     async activateListeners(html: JQuery<HTMLElement>) {
         super.activateListeners(html);
-        // await this.checkPermissions();
+        await this.checkPermissions();
 
-        const microphoneStatus = await navigator.permissions.query({
-            // @ts-ignore
-            name: "microphone",
-        });
-        microphoneStatus.addEventListener("change", () => {
-            this.render(true);
-        });
-        const cameraStatus = await navigator.permissions.query({
-            // @ts-ignore
-            name: "camera",
-        });
-        cameraStatus.addEventListener("change", async () => {
-            this.render(true);
-            await this.changeVideoPreviewSource(html);
-        });
         $(html)
             .find("#virtualBackground")
             .on("change", async () => {
@@ -201,6 +181,32 @@ export class AVQOLSettings extends FormApplication {
         await this.checkVideoEffectAvailability(html);
     }
 
+    private async getCameraStatus() {
+        try {
+            const status = await navigator.permissions.query({
+                // @ts-ignore
+                name: "camera",
+            });
+            return status.state;
+        } catch (e) {
+            debug("Check camera status not supported.");
+            return 'granted';
+        }
+    }
+
+    private async getMicrophoneStatus() {
+        try {
+            const status = await navigator.permissions.query({
+                // @ts-ignore
+                name: "microphone",
+            });
+            return status.state;
+        } catch (e) {
+            debug("Check camera status not supported.");
+            return 'granted';
+        }
+    }
+
     async checkVideoEffectAvailability(html: JQuery<HTMLElement>) {
         if (!cameraEffectsIsSupported()) {
             $(html)
@@ -219,19 +225,19 @@ export class AVQOLSettings extends FormApplication {
         $(html).find("#virtualBackground").removeAttr("disabled");
     }
 
-    // private async checkPermissions() {
-    //     const data = await this.getData();
-    //     const audioPermission =
-    //         data.microphoneStatus == "prompt" && data.audioDep;
-    //     const videoPermission = data.cameraStatus == "prompt" && data.videoDep;
-    //     if (audioPermission || videoPermission) {
-    //         await this.requestPermissions();
-    //     }
-    // }
+    private async checkPermissions() {
+        const data = await this.getData();
+        const audioPermission =
+            data.microphoneStatus == "prompt" && data.audioDep;
+        const videoPermission = data.cameraStatus == "prompt" && data.videoDep;
+        if (audioPermission || videoPermission) {
+            await this.requestPermissions();
+        }
+    }
 
     async _updateObject(event: Event, formData: any) {
         debug("Updating RTC Client settings", formData);
-        this.disableHearMyself()
+        this.disableHearMyself();
         const avqol = getAVQOLAPI();
         if (!avqol.allowPlay) {
             avqol.allowPlay = true;
@@ -453,7 +459,7 @@ export class AVQOLSettings extends FormApplication {
 
     private disableHearMyself() {
         if (!this.hearMyselfAudio) {
-            return
+            return;
         }
         this.hearMyselfAudio.srcObject = null;
         this.hearMyselfAudio.remove();
