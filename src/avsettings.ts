@@ -43,7 +43,6 @@ export class AVQOLSettings extends FormApplication {
         const cameraStatus = await this.getCameraStatus();
         const rtcWorldSettings = getRTCWorldSettings();
         const avqol = getAVQOLAPI();
-        debug("AVQOLSettings.getData", microphoneStatus, cameraStatus)
         return {
             avatar: (game as Game).user?.avatar ?? DEFAULT_AVATAR,
             microphoneStatus: microphoneStatus,
@@ -190,7 +189,7 @@ export class AVQOLSettings extends FormApplication {
             return status.state;
         } catch (e) {
             debug("Check camera status not supported.");
-            return 'granted';
+            return "granted";
         }
     }
 
@@ -203,7 +202,7 @@ export class AVQOLSettings extends FormApplication {
             return status.state;
         } catch (e) {
             debug("Check camera status not supported.");
-            return 'granted';
+            return "granted";
         }
     }
 
@@ -213,6 +212,7 @@ export class AVQOLSettings extends FormApplication {
                 .find("#virtualBackground")
                 .attr("disabled", "disabled")
                 .val(VirtualBackground.NONE);
+            $(html).find(".avqol-virtual-background-options").empty();
             return;
         }
         if ($(html).find("#videoSrc").val() === "disabled") {
@@ -220,6 +220,7 @@ export class AVQOLSettings extends FormApplication {
                 .find("#virtualBackground")
                 .attr("disabled", "disabled")
                 .val(VirtualBackground.NONE);
+            $(html).find(".avqol-virtual-background-options").empty();
             return;
         }
         $(html).find("#virtualBackground").removeAttr("disabled");
@@ -318,7 +319,7 @@ export class AVQOLSettings extends FormApplication {
             ".avqol-virtual-background-options"
         );
 
-        if (selectedVirtualBackground === VirtualBackground.NONE) {
+        if (selectedVirtualBackground === VirtualBackground.NONE || !cameraEffectsIsSupported()) {
             this.previewCameraEffects?.cancel();
             virtualBackgroundOptionsContainer.empty();
             return;

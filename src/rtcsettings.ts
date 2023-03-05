@@ -71,6 +71,10 @@ export const avclientIsSimplePeer = (): boolean => {
     );
 };
 
+const isFirefox = () => {
+    return navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+};
+
 export const cameraEffectsIsSupported = (): boolean => {
-    return avclientIsLivekit() || avclientIsSimplePeer();
+    return (avclientIsLivekit() || avclientIsSimplePeer()) && !isFirefox();
 };
