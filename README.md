@@ -25,5 +25,7 @@ AV/ Quality Of Life provides a number of features beyond the built-in Foundry op
 
 ## Virtual Backgrounds
 
+> **NOTE:** This feature is only available for the **Chrome** browser.
+
 * Blur background
 * Custom image/video
