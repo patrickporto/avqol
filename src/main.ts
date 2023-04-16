@@ -1,7 +1,26 @@
-Hooks.on("init", function() {
-    console.log("This code runs once the Foundry VTT software begins its initialization workflow.");
+import debugModule from "./debug/debug.module";
+
+type Module = {
+    hooks: {
+        init?: () => Promise<void>;
+        ready?: () => Promise<void>;
+    }
+}
+
+const modules: Module[] = [debugModule];
+
+Hooks.on("init", async() => {
+    for(const module of modules) {
+        if(module?.hooks?.init) {
+            await module.hooks.init();
+        }
+    }
 });
 
-Hooks.on("ready", function() {
-    console.log("This code runs once core initialization is ready and game data is available.");
+Hooks.on("ready", async() => {
+    for(const module of modules) {
+        if(module?.hooks?.ready) {
+            await module.hooks.ready();
+        }
+    }
 });
