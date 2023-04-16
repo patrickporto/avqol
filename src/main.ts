@@ -9,7 +9,7 @@ type Module = {
 
 const modules: Module[] = [debugModule];
 
-const main = '';
+const unused = '';
 
 Hooks.on('init', async () => {
     for (const module of modules) {
