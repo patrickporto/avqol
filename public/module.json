@@ -16,6 +16,6 @@
         }
     ],
     "esmodules": [
-        "fvtt-module-template.mjs"
+        "fvtt-module-template.js"
     ]
 }
