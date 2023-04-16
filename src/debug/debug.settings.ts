@@ -1,4 +1,4 @@
-import { CANNONICAL_NAME } from "../constants";
+import { CANNONICAL_NAME } from '../constants';
 
 export class DebugSettings {
     registerSettings() {
@@ -9,11 +9,10 @@ export class DebugSettings {
             config: true,
             default: false,
             type: Boolean,
-        })
+        });
     }
 
     get debug() {
         return (game as Game).settings.get(CANNONICAL_NAME, 'debug');
     }
 }
-
