@@ -32,7 +32,12 @@
         "vite": "^4.2.1"
     },
     "lint-staged": {
-        "**/*": "prettier --write --ignore-unknown",
-        "**/*.{ts,js}": "eslint --fix"
+        "**/*.{ts,js}": [
+            "prettier --write",
+            "eslint --fix ."
+        ],
+        "**/*.{json,css,md}": [
+            "prettier --write"
+        ]
     }
 }
