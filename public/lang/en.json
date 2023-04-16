@@ -1,0 +1,6 @@
+{
+    "ACTOR.TypeCharacter": "Player Character",
+    "ACTOR.TypeNpc": "No-Player Character",
+    "ITEM.TypeSpell": "Spell",
+    "ITEM.TypeWeapon": "Weapon"
+}
