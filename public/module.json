@@ -1,6 +1,6 @@
 {
   "id": "avqol",
-  "version": "1.1.1",
+  "version": "11.0.0",
   "compatibility": {
     "minimum": "10",
     "verified": "11",
@@ -29,8 +29,8 @@
     "avqol.css"
   ],
   "url": "https://github.com/patrickporto/avqol",
-  "manifest": "https://github.com/patrickporto/avqol/releases/download/1.1.1/module.json",
-  "download": "https://github.com/patrickporto/avqol/releases/download/1.1.1/avqol.zip",
+  "manifest": "https://github.com/patrickporto/avqol/releases/download/11.0.0/module.json",
+  "download": "https://github.com/patrickporto/avqol/releases/download/11.0.0/avqol.zip",
   "readme": "https://github.com/patrickporto/avqol/blob/main/README.md",
   "changelog": "https://github.com/patrickporto/avqol/releases",
   "bugs": "https://github.com/patrickporto/avqol/issues"
