@@ -208,7 +208,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 8px;
+    margin-left: 42px;
     cursor: pointer;
     pointer-events: all;
     transition: all 0.2s ease-in;
