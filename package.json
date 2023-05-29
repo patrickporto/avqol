@@ -4,7 +4,6 @@
     "private": true,
     "scripts": {
         "build": "vite build",
-        "build:config": "iron build",
         "build:watch": "vite build --watch",
         "postversion": "npm run postversion:update-module-version && npm run postversion:update-module-manifest && npm run postversion:update-module-download",
         "postversion:update-module-version": "jq '.version = \"'${npm_package_version}'\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json",
