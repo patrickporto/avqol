@@ -1,10 +1,10 @@
 {
     "id": "fvtt-module-template",
-    "version": "10.0.0",
+    "version": "11.0.0",
     "compatibility": {
-        "minimum": "10",
-        "verified": "10",
-        "maximum": "10"
+        "minimum": "11",
+        "verified": "11",
+        "maximum": "11"
     },
     "title": "fvtt-module-template",
     "description": "A Foundry VTT module template",

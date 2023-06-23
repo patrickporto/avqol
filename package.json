@@ -1,6 +1,6 @@
 {
     "name": "fvtt-module-template",
-    "version": "1.0.0",
+    "version": "11.0.0",
     "private": true,
     "type": "module",
     "scripts": {
