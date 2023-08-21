@@ -15,6 +15,7 @@
             "path": "lang/en.json"
         }
     ],
+    "url": "https://github.com/patrickporto/fvtt-module-template",
     "esmodules": [
         "fvtt-module-template.js"
     ]
