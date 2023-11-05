@@ -9,7 +9,7 @@ import {
 import {
     cameraEffectsIsSupported,
 } from "./rtcsettings";
-import { getAVQOLAPI } from "./avqol";
+import { getAVQOLAPI } from "./api";
 
 export const applyCameraEffects = async (): Promise<void> => {
     const avqol = getAVQOLAPI();

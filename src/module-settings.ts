@@ -1,5 +1,5 @@
 import { registerSettings as debug } from "./debug";
-import { registerSettings as avqol } from "./avqol";
+import { registerSettings as avqol } from "./api";
 import { registerSettings as cameraEffects } from "./camera-effects";
 import { registerSettings as ux } from "./ux";
 

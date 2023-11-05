@@ -2,6 +2,7 @@
     "name": "avqol",
     "version": "11.0.0",
     "private": true,
+    "type": "module",
     "scripts": {
         "build": "vite build",
         "build:watch": "vite build --watch",

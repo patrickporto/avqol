@@ -5,7 +5,7 @@ import {
     isForcedOpenSettings,
     registerAVQOLAPI,
     shouldOpenSettings,
-} from "./avqol";
+} from "./api.js";
 import { CANONICAL_NAME } from "./constants";
 
 import { debug } from "./debug";

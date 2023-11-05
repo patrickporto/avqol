@@ -16,7 +16,7 @@ import {
     setVirtualBackground,
     setVirtualBackgroundOptions,
 } from "./camera-effects";
-import { getAVQOLAPI } from "./avqol";
+import { getAVQOLAPI } from "./api";
 
 const DEFAULT_AVATAR = "icons/svg/mystery-man.svg";
 

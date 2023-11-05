@@ -24,6 +24,7 @@ export default defineConfig({
         outDir: resolve(__dirname, 'dist'),
         emptyOutDir: true,
         sourcemap: true,
+        target: ['es2022'],
         lib: {
             entry: './main.ts',
             name: pkg.name,
@@ -35,6 +36,18 @@ export default defineConfig({
                 assetFileNames: `${pkg.name}.[ext]`,
             },
         },
+    },
+    resolve: {
+      conditions: ['import', 'browser'],
+      alias: [
+        {
+          find: "./runtimeConfig",
+          replacement: "./runtimeConfig.browser",
+        },
+      ],
+    },
+    define: {
+      'process.env': {}
     },
 })
 

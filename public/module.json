@@ -23,7 +23,7 @@
     }
   ],
   "esmodules": [
-    "avqol.mjs"
+    "avqol.js"
   ],
   "styles": [
     "avqol.css"

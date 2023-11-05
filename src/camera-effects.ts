@@ -1,7 +1,7 @@
 import "@mediapipe/selfie_segmentation";
 import { debug } from "./debug";
 import { CANONICAL_NAME, VirtualBackground } from "./constants";
-import { getAVQOLAPI } from "./avqol";
+import { getAVQOLAPI } from "./api";
 
 const STREAM_FPS = 30;
 

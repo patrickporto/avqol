@@ -9,7 +9,7 @@ import {
   avclientIsSimplePeer,
 } from "./rtcsettings";
 
-import { getAVQOLAPI } from "./avqol";
+import { getAVQOLAPI } from "./api";
 import { CameraEffect } from "./camera-effects";
 
 interface AVClientWrapper {

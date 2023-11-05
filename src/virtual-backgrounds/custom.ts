@@ -1,4 +1,4 @@
-import { getDefaultVirtualBackgroundPath } from "../avqol";
+import { getDefaultVirtualBackgroundPath } from "../api";
 
 export const renderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>, data: Record<string, any>) => {
     const template = `
