@@ -25,7 +25,6 @@
     },
     "devDependencies": {
         "@foundryvtt/foundryvtt-cli": "^0.0.6",
-        "@league-of-foundry-developers/foundry-vtt-types": "git://github.com/League-of-Foundry-Developers/foundry-vtt-types.git#main",
         "@typescript-eslint/eslint-plugin": "^5.58.0",
         "@typescript-eslint/parser": "^5.58.0",
         "eslint": "^8.38.0",

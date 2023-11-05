@@ -11,7 +11,7 @@ import { CANONICAL_NAME } from "./constants";
 import { debug } from "./debug";
 import registerSettings from "./module-settings";
 import { getRTCWorldSettings } from "./rtcsettings";
-import "./styles.css";
+import "./avqol.css";
 import "./camera-view";
 import "./virtual-backgrounds";
 import "./ux";
