@@ -9,7 +9,8 @@
         "postversion": "npm run postversion:update-module-version && npm run postversion:update-module-manifest && npm run postversion:update-module-download",
         "postversion:update-module-version": "jq '.version = \"'${npm_package_version}'\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json",
         "postversion:update-module-manifest": "jq '.manifest = \"https://github.com/patrickporto/avqol/releases/download/'${npm_package_version}'/module.json\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json",
-        "postversion:update-module-download": "jq '.download = \"https://github.com/patrickporto/avqol/releases/download/'${npm_package_version}'/avqol.zip\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json",        "format": "prettier --write \"src/**/*.{ts,js,json,css,md}\"",
+        "postversion:update-module-download": "jq '.download = \"https://github.com/patrickporto/avqol/releases/download/'${npm_package_version}'/avqol.zip\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json",
+        "format": "prettier --write \"src/**/*.{ts,js,json,css,md}\"",
         "format:check": "prettier --check \"src/**/*.{ts,js,json,css,md}\"",
         "lint": "eslint -c .eslintrc.cjs .",
         "lint:fix": "eslint -c .eslintrc.cjs --fix .",
@@ -22,8 +23,8 @@
         "url": "https://github.com/patrickporto/avqol"
     },
     "devDependencies": {
-        "@league-of-foundry-developers/foundry-vtt-types": "git://github.com/League-of-Foundry-Developers/foundry-vtt-types.git#main",
         "@foundryvtt/foundryvtt-cli": "^0.0.6",
+        "@league-of-foundry-developers/foundry-vtt-types": "git://github.com/League-of-Foundry-Developers/foundry-vtt-types.git#main",
         "@typescript-eslint/eslint-plugin": "^5.58.0",
         "@typescript-eslint/parser": "^5.58.0",
         "eslint": "^8.38.0",
@@ -32,12 +33,13 @@
         "husky": "^8.0.3",
         "libts": "^1.0.1",
         "lint-staged": "^13.2.1",
+        "node-jq": "^2.3.5",
         "prettier": "2.8.7",
         "prettier-eslint": "^15.0.1",
-        "node-jq": "^2.3.5",
         "tslib": "^2.5.0",
         "typescript": "^4.9.5",
-        "vite": "^4.1.2"
+        "vite": "^4.1.2",
+        "vite-plugin-mkcert": "^1.16.0"
     },
     "dependencies": {
         "@mediapipe/selfie_segmentation": "^0.1.1675465747"
