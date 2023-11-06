@@ -8,7 +8,7 @@
     "AVQOL.VideoSettings": "Video Settings",
     "AVQOL.AudioSettings": "Audio Settings",
     "AVQOL.MenuConfigutation": "Audio/Video Configuration",
-    "AVQOL.MenuConfigutationHint": "Configure settings to the integrated A/V with quality of life",
+    "AVQOL.MenuConfigutationHint": " (DEPRECATED) Use the user config to configure the A/V Quality of Life",
     "AVQOL.MenuConfigutationLabel": "Configure Audio/Video",
     "AVQOL.HearMyself": "Hear Myself",
     "AVQOL.DefaultVirtualBackgroundPath": "Default Virtual Background Path",
