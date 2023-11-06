@@ -77,32 +77,6 @@ export const applyEffect = async (
 
     }
 
-    // imageSegmenter.segmentForVideo(video, startTimeMs, (segmentation) => {
-    //     flipCanvasHorizontal(canvas);
-    //     virtualBackgroundRender(segmentation)
-    // });
-    // const refreshVideoEffect = async () => {
-    //     if (video.videoWidth === 0 || video.videoHeight === 0) {
-    //         await new Promise((resolve) => {
-    //             video.addEventListener("loadedmetadata", resolve);
-    //         });
-    //         await video?.play();
-    //     }
-    //     const ctx = canvas.getContext("2d");
-    //     const scaleX = canvas.width / video.videoWidth;
-    //     const scaleY = canvas.height / video.videoHeight;
-    //     const scale = Math.min(scaleX, scaleY);
-    //     const scaledWidth = video.videoWidth * scale;
-    //     const scaledHeight = video.videoHeight * scale;
-    //     // calculate the offset to center the video on the canvas
-    //     const offsetX = (canvas.width - scaledWidth) / 2;
-    //     const offsetY = (canvas.height - scaledHeight) / 2;
-
-    //     ctx.drawImage(video, offsetX, offsetY, scaledWidth, scaledHeight);
-    //     $(videoEffectContainer).removeClass("avqol-video-effect--loading");
-    //     videoRefreshAnimationFrame = requestAnimationFrame(refreshVideoEffect);
-    // };
-
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     requestAnimationFrameId = requestAnimationFrame(startSegmentationTask);
 
