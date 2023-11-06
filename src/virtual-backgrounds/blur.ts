@@ -1,3 +1,5 @@
+import { ImageSegmenterResult } from '@mediapipe/tasks-vision';
+import { createCopyTextureToCanvas, tasksCanvas } from './convertMPMaskToImageBitmap';
 export const defaultOptions = {
     blurRadius: 6,
 }
@@ -12,30 +14,34 @@ export const renderOptions = (virtualBackgroundOptions: JQuery<HTMLElement>, dat
 }
 
 export default async (canvas: HTMLCanvasElement, options: Record<string, any>) => {
-    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-    const blur = `blur(${options.blurRadius}px)`
-    return (results: any) => {
+    const ctx = canvas.getContext("2d");
+    // const blur = `blur(${options.blurRadius}px)`
+    const toImageBitmap = createCopyTextureToCanvas(tasksCanvas);
+    return async (results: ImageSegmenterResult) => {
         ctx.save();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw the original image
-        ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+        // const originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        // const originalImage = new ImageData(originalImageData.width, originalImageData.height);
 
         // Mask the image with the segmentation mask.
         ctx.globalCompositeOperation = "destination-in";
+        const segmentationMask = results.confidenceMasks[0];
+        const segmentationMaskBitmap = await toImageBitmap(segmentationMask);
         ctx.drawImage(
-            results.segmentationMask,
+            segmentationMaskBitmap,
             0,
             0,
             canvas.width,
             canvas.height
         );
+        ctx.restore();
 
         // Only overwrite missing pixels.
-        ctx.globalCompositeOperation = "destination-over";
-        ctx.filter = blur;
-        ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
-        ctx.filter = "none";
-        ctx.restore();
+        // ctx.globalCompositeOperation = "destination-over";
+        // ctx.filter = blur;
+        // ctx.drawImage(originalImageData, 0, 0, canvas.width, canvas.height);
+        // ctx.filter = "none";
+        // ctx.restore();
     };
 }

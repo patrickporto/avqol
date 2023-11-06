@@ -1,7 +1,8 @@
-import "@mediapipe/selfie_segmentation";
+import { FilesetResolver, ImageSegmenter } from "@mediapipe/tasks-vision";
 import { debug } from "./debug";
 import { CANONICAL_NAME, VirtualBackground } from "./constants";
 import { getAVQOLAPI } from "./api";
+import { tasksCanvas } from "./virtual-backgrounds/convertMPMaskToImageBitmap";
 
 const STREAM_FPS = 30;
 
@@ -26,16 +27,6 @@ const flipCanvasHorizontal = (canvas: HTMLCanvasElement) => {
 
 let videoRefreshAnimationFrame: null | number = null;
 
-// @ts-ignore
-const selfieSegmentation = new SelfieSegmentation({
-    locateFile: (file: any) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
-    },
-});
-selfieSegmentation.setOptions({
-    modelSelection: 1,
-});
-
 export const applyEffect = async (
     canvas: HTMLCanvasElement,
     video: HTMLVideoElement,
@@ -54,29 +45,53 @@ export const applyEffect = async (
 
     if (videoRefreshAnimationFrame) {
         cancelAnimationFrame(videoRefreshAnimationFrame);
-        selfieSegmentation.reset();
     }
-    selfieSegmentation.onResults(async (results: any) => {
+    const vision = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+    );
+
+    const imageSegmenter = await ImageSegmenter.createFromOptions(vision, {
+        baseOptions: {
+            modelAssetPath:
+                "https://storage.googleapis.com/mediapipe-assets/selfie_segm_144_256_3.tflite?generation=1678818074421716",
+            delegate: "GPU"
+        },
+        canvas: tasksCanvas,
+        outputCategoryMask: true,
+        outputConfidenceMasks: true,
+        runningMode: "VIDEO",
+    });
+    const startTimeMs = performance.now();
+
+    imageSegmenter.segmentForVideo(video, startTimeMs, (segmentation) => {
         flipCanvasHorizontal(canvas);
-        virtualBackgroundRender(results)
+        virtualBackgroundRender(segmentation)
     });
     const refreshVideoEffect = async () => {
         if (video.videoWidth === 0 || video.videoHeight === 0) {
             await new Promise((resolve) => {
                 video.addEventListener("loadedmetadata", resolve);
             });
-            video?.play();
+            await video?.play();
         }
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        await selfieSegmentation.send({ image: video });
+        const ctx = canvas.getContext("2d");
+        const scaleX = canvas.width / video.videoWidth;
+        const scaleY = canvas.height / video.videoHeight;
+        const scale = Math.min(scaleX, scaleY);
+        const scaledWidth = video.videoWidth * scale;
+        const scaledHeight = video.videoHeight * scale;
+        // calculate the offset to center the video on the canvas
+        const offsetX = (canvas.width - scaledWidth) / 2;
+        const offsetY = (canvas.height - scaledHeight) / 2;
+
+        ctx.drawImage(video, offsetX, offsetY, scaledWidth, scaledHeight);
         $(videoEffectContainer).removeClass("avqol-video-effect--loading");
         videoRefreshAnimationFrame = requestAnimationFrame(refreshVideoEffect);
     };
 
     videoRefreshAnimationFrame = requestAnimationFrame(refreshVideoEffect);
 
-    const cancel = async () => {
+    const cancel = () => {
         if (videoRefreshAnimationFrame) {
             cancelAnimationFrame(videoRefreshAnimationFrame);
         }
