@@ -1,5 +1,5 @@
 import { ImageSegmenterResult } from '@mediapipe/tasks-vision';
-import { createCopyTextureToCanvas, tasksCanvas } from './convertMPMaskToImageBitmap';
+import { createCopyTextureToCanvas, tasksCanvas, toImageBitmap } from '../third-party/convertMPMaskToImageBitmap';
 
 type VirtualBackgroundOptions = {
     blurRadius: number;
@@ -73,7 +73,6 @@ const safariBlurBackground = (context, blurRadius = 8) => {
 
 export default (canvas: HTMLCanvasElement, options: VirtualBackgroundOptions) => {
     const ctx = canvas.getContext("2d");
-    const toImageBitmap = createCopyTextureToCanvas(tasksCanvas);
     return async (results: ImageSegmenterResult, input: ImageBitmap, video: HTMLVideoElement) => {
         // get the canvas dimensions
         const canvasWidth = canvas.width;
@@ -94,16 +93,9 @@ export default (canvas: HTMLCanvasElement, options: VirtualBackgroundOptions) =>
         const offsetX = (canvasWidth - scaledWidth) / 2;
         const offsetY = (canvasHeight - scaledHeight) / 2;
 
-        // const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-        // const originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        // const originalImage = new ImageData(originalImageData.width, originalImageData.height);
-
-        // Mask the image with the segmentation mask.
-
         ctx.save();
         ctx.fillStyle = 'white'
-        ctx.clearRect(0, 0, scaledWidth, scaledHeight)
+        ctx.clearRect(offsetX, offsetY, scaledWidth, scaledHeight)
 
         // // draw the mask image on the canvas
         const segmentationMask = results.confidenceMasks[0];
@@ -119,8 +111,6 @@ export default (canvas: HTMLCanvasElement, options: VirtualBackgroundOptions) =>
         blurBackgroundCanvas.width = videoWidth;
         blurBackgroundCanvas.height = videoHeight;
         const blurBackgroundCtx = blurBackgroundCanvas.getContext('2d');
-        // blurBackgroundCtx.translate(videoWidth, 0);
-        // blurBackgroundCtx.scale(-1, 1);
         if (blurBackgroundCtx.filter) {
             blurBackgroundCtx.filter = `blur(${options.blurRadius}px)`
             blurBackgroundCtx.drawImage(input, 0, 0, videoWidth, videoHeight)
@@ -133,11 +123,8 @@ export default (canvas: HTMLCanvasElement, options: VirtualBackgroundOptions) =>
         // draw the blur background on the canvas
         ctx.globalCompositeOperation = 'source-out'
         ctx.drawImage(blurBackgroundCanvas, offsetX, offsetY, scaledWidth, scaledHeight);
-
         ctx.restore();
 
-        // ctx.save();
-        // scale, flip and draw the video to fit the canvas
         ctx.globalCompositeOperation = 'destination-atop'
         ctx.drawImage(input, offsetX, offsetY, scaledWidth, scaledHeight);
         ctx.restore();

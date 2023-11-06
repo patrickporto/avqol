@@ -2,7 +2,7 @@ import { FilesetResolver, ImageSegmenter } from "@mediapipe/tasks-vision";
 import { debug } from "./debug";
 import { CANONICAL_NAME, VirtualBackground } from "./constants";
 import { getAVQOLAPI } from "./api";
-import { tasksCanvas } from "./virtual-backgrounds/convertMPMaskToImageBitmap";
+import { tasksCanvas } from "./third-party/convertMPMaskToImageBitmap";
 
 const STREAM_FPS = 30;
 

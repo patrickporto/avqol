@@ -105,3 +105,5 @@ export function createCopyTextureToCanvas(
         return createImageBitmap(canvas)
     }
 }
+
+export const toImageBitmap = createCopyTextureToCanvas(tasksCanvas);
