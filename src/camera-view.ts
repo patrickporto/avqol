@@ -41,6 +41,8 @@ export const applyCameraEffects = async (): Promise<void> => {
     )[0] as HTMLCanvasElement;
     if (!canvas) {
         canvas = document.createElement("canvas");
+        canvas.width = video.width();
+        canvas.height = video.height();
         canvas.classList.add("avqol-video-effect__canvas");
         video.after(canvas);
     }
