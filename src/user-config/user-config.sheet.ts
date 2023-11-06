@@ -8,7 +8,8 @@ export class AVQOLUserConfig extends UserConfig {
             classes: ["sheet", "user-config"],
             template: `${TEMPLATE_PATH}/user-config.hbs`,
             width: 400,
-            height: "auto"
+            height: "auto",
+            tabs: [{ navSelector: ".tabs", contentSelector: "form", initial: "general" }]
         })
     }
 
