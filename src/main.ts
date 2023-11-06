@@ -15,9 +15,15 @@ import "./avqol.css";
 import "./camera-view";
 import "./virtual-backgrounds";
 import "./ux";
+import { AVQOLUserConfig } from "./user-config/user-config.sheet.js";
 
 Hooks.on("init", async () => {
     registerSettings();
+
+    DocumentSheetConfig.registerSheet(User, CANONICAL_NAME, AVQOLUserConfig, {
+        label: "AVQOL.UserConfig",
+        makeDefault: true,
+    })
     debug("initializing AVQOL");
     registerAVQOLAPI();
     const avqol = getAVQOLAPI();

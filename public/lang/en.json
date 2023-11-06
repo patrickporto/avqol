@@ -33,5 +33,6 @@
     "AVQOL.UserExperienceVoiceButton": "Voice Button",
     "AVQOL.UserExperienceVoiceButtonHint": "Configure the voice button style to better user experience",
     "AVQOL.UserExperienceVoiceButtonStandard": "Standard",
-    "AVQOL.UserExperienceVoiceButtonEnhanced": "Enhanced"
+    "AVQOL.UserExperienceVoiceButtonEnhanced": "Enhanced",
+    "AVQOL.UserConfig": "A/V Quality of Life - User Configuration"
 }
