@@ -18,7 +18,7 @@ export class AVQOLUserConfig extends UserConfig {
             classes: ["sheet", "user-config", "avqol-user-config"],
             template: `${TEMPLATE_PATH}/user-config.hbs`,
             width: 600,
-            height: 625,
+            height: 700,
             tabs: [{ navSelector: ".tabs", contentSelector: "form", initial: "general" }]
         })
     }
