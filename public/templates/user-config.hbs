@@ -72,6 +72,130 @@
         </div>
     </div>
     <div class='tab' data-tab='av'>
+        <section>
+            <div class='avqol-video-preview'>
+                <div class='avqol-video-preview__container avqol-video-effect'>
+                    <img class='avqol-video-preview__avatar' src='{{avatar}}' />
+                    <video
+                        class='avqol-video-preview__video'
+                        autoplay='autoplay'
+                        playsinline='playsinline'
+                    ></video>
+                    <canvas class='avqol-video-preview__canvas'></canvas>
+                </div>
+            </div>
+        </section>
+        {{#if videoDep}}
+            <section>
+                <h2>{{localize 'AVQOL.VideoSettings'}}</h2>
+                {{#if (eq cameraStatus 'granted')}}
+                    <div class='form-group'>
+                        <label for='videoSrc'>{{localize 'WEBRTC.VideoDevice'}}</label>
+                        <select name='videoSrc' id='videoSrc'>
+                            {{selectOptions videoDevices selected=videoSrc}}
+                        </select>
+                        <p class='notes'>{{localize 'WEBRTC.VideoDeviceNotes'}}</p>
+                    </div>
+                    <div class='form-group'>
+                        <label for='virtualBackground'>{{localize
+                                'AVQOL.VirtualBackground'
+                            }}</label>
+                        <select name='virtualBackground' id='virtualBackground'>
+                            {{selectOptions virtualBackgrounds selected=virtualBackground}}
+                        </select>
+                        <p class='notes'>{{localize 'AVQOL.VirtualBackgroundHint'}}</p>
+                    </div>
+                    <fieldset
+                        name='virtualBackgrounOptions'
+                        class='avqol-virtual-background-options'
+                    ></fieldset>
+                {{else}}
+                    <div class='avqol-permissions'>
+                        <p
+                            class='avqol-permissions__permission avqol-permissions__permission--{{cameraStatus}}'
+                        >
+                            <strong><i class='fa-solid fa-camera'></i>
+                                {{localize 'AVQOL.PermissionVideo'}}</strong>
+                            <span class='avqol-permissions__permission-status'>
+                                {{#if (eq cameraStatus 'prompt')}}
+                                    <i class='fa-solid fa-question'></i>
+                                    {{localize 'AVQOL.PermissionPrompt'}}
+                                {{/if}}
+                                {{#if (eq cameraStatus 'denied')}}
+                                    <i class='fa-solid fa-xmark'></i>
+                                    {{localize 'AVQOL.PermissionDenied'}}
+                                {{/if}}
+                            </span>
+                        </p>
+                    </div>
+                {{/if}}
+            </section>
+        {{/if}}
+        {{#if audioDep}}
+            <section>
+                <h2>{{localize 'AVQOL.AudioSettings'}}</h2>
+                {{#if (eq microphoneStatus 'granted')}}
+                    <div class='form-group'>
+                        <label for='voiceMode'>{{localize 'WEBRTC.VoiceMode'}}</label>
+                        <select name='voiceMode' id='voiceMode'>
+                            {{selectOptions voiceModes selected=voiceMode}}
+                        </select>
+                        <p class='notes'>{{localize 'WEBRTC.VoiceModeNotes'}}</p>
+                    </div>
+                    <div class='form-group'>
+                        <label for='audioSrc'>{{localize 'WEBRTC.AudioDevice'}}</label>
+                        <select name='audioSrc' id='audioSrc'>
+                            {{selectOptions audioSourceDevices selected=audioSrc}}
+                        </select>
+                        <p class='notes'>{{localize 'WEBRTC.AudioDeviceNotes'}}</p>
+                    </div>
+                    <div class='avqol-mic-test'>
+                        <div class='avqol-pids' id='audioSrcPids'>
+                            <div class='avqol-pids__cell'></div>
+                            <div class='avqol-pids__cell'></div>
+                            <div class='avqol-pids__cell'></div>
+                            <div class='avqol-pids__cell'></div>
+                            <div class='avqol-pids__cell'></div>
+                            <div class='avqol-pids__cell'></div>
+                            <div class='avqol-pids__cell'></div>
+                            <div class='avqol-pids__cell'></div>
+                            <div class='avqol-pids__cell'></div>
+                            <div class='avqol-pids__cell'></div>
+                        </div>
+                        <div class='form-group'>
+                            <label for='audioSrc'>{{localize 'AVQOL.HearMyself'}}</label>
+                            <input type='checkbox' id='hearMyself' />
+                        </div>
+                    </div>
+                    <div class='form-group'>
+                        <label for='audioSink'>{{localize 'WEBRTC.AudioOutput'}}</label>
+                        <select name='audioSink' id='audioSink'>
+                            {{selectOptions audioOutputDevices selected=audioSink}}
+                        </select>
+                        <p class='notes'>{{localize 'WEBRTC.AudioOutputNotes'}}</p>
+                    </div>
+                {{else}}
+                    <div class='avqol-permissions'>
+                        <p
+                            class='avqol-permissions__permission avqol-permissions__permission--{{microphoneStatus}}'
+                        >
+                            <strong><i class='fa-solid fa-microphone'></i>
+                                {{localize 'AVQOL.PermissionAudio'}}</strong>
+                            <span class='avqol-permissions__permission-status'>
+                                {{#if (eq microphoneStatus 'prompt')}}
+                                    <i class='fa-solid fa-question'></i>
+                                    {{localize 'AVQOL.PermissionPrompt'}}
+                                {{/if}}
+                                {{#if (eq microphoneStatus 'denied')}}
+                                    <i class='fa-solid fa-xmark'></i>
+                                    {{localize 'AVQOL.PermissionDenied'}}
+                                {{/if}}
+                            </span>
+                        </p>
+                    </div>
+                {{/if}}
+            </section>
+        {{/if}}
 
     </div>
 
