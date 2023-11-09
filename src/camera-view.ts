@@ -65,7 +65,7 @@ export const applyCameraEffects = async (): Promise<void> => {
 
 Hooks.on("renderCameraViews", async () => {
     const avqol = getAVQOLAPI();
-    if (avqol.allowPlay) {
+    if (avqol?.allowPlay) {
         await applyCameraEffects();
     }
 });

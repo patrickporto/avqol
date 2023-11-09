@@ -269,7 +269,7 @@ export class AVQOLSettings extends FormApplication {
             await setVirtualBackgroundOptions(virtualBackgroundOptions);
         }
         this.previewCameraEffects?.cancel();
-        applyCameraEffects();
+        await applyCameraEffects();
     }
 
     async requestPermissions() {
