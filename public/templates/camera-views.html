@@ -1,0 +1,118 @@
+{{#*inline "controlBar"}}
+<nav class="control-bar bottom flexrow" aria-label="{{localize 'WEBRTC.NavLabel'}}">
+    <div class="volume-bar">
+        <i class="fas fa-volume-down fa-fw vol-min"></i>
+        <input class="webrtc-volume-slider" type="range" min="0" max="1" step="0.05" value="{{this.volume}}"/>
+        <i class="fas fa-volume-up fa-fw vol-max"></i>
+    </div>
+
+    {{#if (and local (not @root.hidden))}}
+    <a class="av-control toggle" data-action="toggle-dock">
+        <i class="far fa-fw"></i>
+    </a>
+
+    <a class="av-control toggle" data-action="toggle-players">
+        <i class="far fa-fw fa-rotate-270"></i>
+    </a>
+    {{/if}}
+
+    <a class="av-control toggle" data-action="toggle-video">
+        <i class="fas fa-fw"></i>
+    </a>
+
+    <a class="av-control toggle" data-action="toggle-audio">
+        <i class="fas fa-fw"></i>
+    </a>
+
+    <a class="av-control toggle" data-action="mute-peers">
+        <i class="fas fa-fw"></i>
+    </a>
+
+    <a class="av-control toggle" data-action="disable-video">
+        <i class="fas fa-fw"></i>
+    </a>
+
+    {{#if this.local}}
+    <a class="av-control" data-tooltip="{{localize 'WEBRTC.TooltipConfigure'}}" data-action="configure">
+        <i class="fas fa-cog"></i>
+    </a>
+    {{/if}}
+</nav>
+{{/inline}}
+
+{{#*inline "cameraBox"}}
+<div class="camera-view {{this.cameraViewClass}}" data-user="{{this.user.id}}"
+    {{#if @root.borderColors}}style="background: linear-gradient(to bottom, {{this.user.border.css}} 0%, {{this.user.color}} 100%);"{{/if}}>
+    <div class="video-container {{#if this.settings.popout}}camera-container-popout{{/if}}">
+        <img class="user-avatar" src="{{this.user.avatar}}"/>
+        <video class="user-camera {{#if this.local}}local-camera{{/if}}"
+               style="visibility:hidden; display: none;" autoplay="autoplay" playsinline="playsinline">
+        </video>
+    </div>
+
+    {{!-- Left Control Bar --}}
+    <div class="control-bar left flexcol hidden">
+        <a class="av-control toggle global" data-action="block-video">
+            <i class="fas fa-fw"></i>
+        </a>
+        <a class="av-control toggle global" data-action="block-audio">
+            <i class="fas fa-fw"></i>
+        </a>
+        <a class="av-control toggle" data-action="hide-user">
+            <i class="fas fa-fw"></i>
+        </a>
+
+        {{#if this.settings.popout}}
+        <a class="av-control toggle" data-tooltip="{{localize 'WEBRTC.TooltipDock'}}" data-action="toggle-popout">
+            <i class="fas fa-external-link-square-alt fa-rotate-180"></i>
+        </a>
+        {{else}}
+        <a class="av-control toggle" data-tooltip="{{localize 'WEBRTC.TooltipPopout'}}" data-action="toggle-popout">
+            <i class="fas fa-external-link-alt"></i>
+        </a>
+        {{/if}}
+    </div>
+
+    {{!-- Bottom Control Bar --}}
+    {{#if (or @root.hidden (not local))}}
+        {{> controlBar}}
+    {{/if}}
+
+    {{!-- Right Notification Bar --}}
+    <div class="notification-bar right flexcol">
+        <i class="fas fa-video-slash fa-fw status-hidden hidden"></i>
+        <i class="fas fa-microphone-slash fa-fw status-muted hidden"></i>
+    </div>
+
+    <div class="shadow"></div>
+
+    <h3 class="player-name noborder {{@root.nameplates.cssClass}}" style="color: {{this.user.border}};">
+        {{#if @root.nameplates.playerName}}
+        <span>{{this.user.name}}</span>
+        {{/if}}
+        {{#if @root.nameplates.charname}}
+        <span>{{#if this.charname}}{{this.charname}}{{else}}{{this.user.name}}{{/if}}</span>
+        {{/if}}
+    </h3>
+</div>
+{{/inline}}
+
+<div id="camera-views" class="app {{dockClass}}">
+    <div class="camera-container">
+        <div class="camera-grid">
+        {{#each users}}
+            {{#if this.settings.popout}}
+            <div id="camera-views-user-{{this.user.id}}" class="app camera-view-popout">
+                {{> cameraBox isGM=../self.isGM muteAll=../muteAll}}
+            </div>
+            {{else}}
+            {{> cameraBox isGM=../self.isGM muteAll=../muteAll dockClass=../dockClass}}
+            {{/if}}
+        {{/each}}
+        </div>
+    </div>
+    <div class="camera-view-width-control"></div>
+    <div class="user-controls" data-user="{{self.id}}">
+        {{> controlBar local=true}}
+    </div>
+</div>
