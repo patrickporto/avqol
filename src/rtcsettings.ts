@@ -31,12 +31,12 @@ export type LivekitAVClient = AVClient & {
 type AVQOLClient = LivekitAVClient | SimplePeerAVClient;
 
 export const getRTCWorldSettings = () => {
-    const settings = (game as Game).settings.get("core", "rtcWorldSettings");
+    const settings = game.settings.get("core", "rtcWorldSettings");
     return settings as RTCWorldSettings;
 };
 
 export const getRTCClientSettings = () => {
-    const settings = (game as Game).settings.get("core", "rtcClientSettings");
+    const settings = game.settings.get("core", "rtcClientSettings");
     return settings as RTCClientSettings;
 };
 
@@ -45,29 +45,23 @@ export const getRTCClient = (): AVQOLClient => {
     return game.webrtc.client;
 };
 
-export const setRTCClientSettings = async (settings: RTCClientSettings) => {
-    const currentSettings = (game as Game).settings.get(
-        "core",
-        "rtcClientSettings"
-    );
-    await (game as Game).settings.set("core", "rtcClientSettings", {
-        ...currentSettings,
-        ...settings,
-        voice: {
-            ...currentSettings.voice,
-            ...settings.voice,
-        },
-    });
+export const setRTCClientSettings = async (updatedSettings: RTCClientSettings) => {
+    const settings = game.webrtc.settings;
+    settings.client.videoSrc = settings.client.videoSrc || null;
+    settings.client.audioSrc = settings.client.audioSrc || null;
+
+    const client = foundry.utils.mergeObject(settings.client, updatedSettings)
+    await game.settings.set("core", "rtcClientSettings", client);
 };
 
 export const avclientIsLivekit = (): boolean => {
-    return (game as Game).modules.get("avclient-livekit")?.active ?? false;
+    return game.modules.get("avclient-livekit")?.active ?? false;
 };
 
 export const avclientIsSimplePeer = (): boolean => {
     return (
         // @ts-ignore
-        (game as Game).webrtc.client?.constructor?.name == "SimplePeerAVClient"
+        game.webrtc.client?.constructor?.name == "SimplePeerAVClient"
     );
 };
 
