@@ -12,5 +12,6 @@ export class AVQOLCameraViews extends CameraViews {
     }
     activateListeners(html) {
         super.activateListeners(html);
+        console.log("AVQOLCameraViews activateListeners");
     }
 }
