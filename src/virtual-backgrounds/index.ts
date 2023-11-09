@@ -1,7 +1,7 @@
 import { AVQOL } from "../api"
 import { VirtualBackground } from "../constants"
 import { debug } from "../debug"
-import blur, { renderOptions as renderBlurOptions, defaultOptions as blurDefaultOptions } from "./blur"
+import blur, { defaultOptions as blurDefaultOptions, renderOptions as renderBlurOptions } from "./blur"
 import custom, { renderOptions as renderCustomBackgroundOptions } from "./custom"
 
 
