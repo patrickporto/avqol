@@ -21,10 +21,6 @@ export const applyCameraEffects = async (): Promise<void> => {
     if (!video) {
         return;
     }
-    if (!cameraEffectsIsSupported()) {
-        debug("Camera effects are not supported with this AV client.");
-        return;
-    }
     const virtualBackground = getVirtualBackground();
     const webrtc = (game as Game).webrtc as AVMaster;
     const userSettings = webrtc.settings.getUser((game as Game).userId as string);
@@ -33,6 +29,10 @@ export const applyCameraEffects = async (): Promise<void> => {
         avqol?.getCameraEffect()?.cancel();
         // @ts-ignore
         ui.webrtc.render();
+        return;
+    }
+    if (!cameraEffectsIsSupported()) {
+        debug("Camera effects are not supported with this AV client.");
         return;
     }
     const virtualBackgroundOptions = getVirtualBackgroundOptions();
