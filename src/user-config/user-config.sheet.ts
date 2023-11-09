@@ -205,7 +205,7 @@ export class AVQOLUserConfig extends UserConfig {
         }
     }
 
-    async checkVideoEffectAvailability(html: JQuery<HTMLElement>) {
+    checkVideoEffectAvailability(html: JQuery<HTMLElement>) {
         if (!cameraEffectsIsSupported()) {
             $(html)
                 .find("#virtualBackground")
@@ -227,8 +227,7 @@ export class AVQOLUserConfig extends UserConfig {
 
     private async checkPermissions() {
         const data = await this.getData();
-        const audioPermission =
-            data.microphoneStatus == "prompt" && data.audioDep;
+        const audioPermission = data.microphoneStatus == "prompt" && data.audioDep;
         const videoPermission = data.cameraStatus == "prompt" && data.videoDep;
         if (audioPermission || videoPermission) {
             await this.requestPermissions();
@@ -268,7 +267,7 @@ export class AVQOLUserConfig extends UserConfig {
             await setVirtualBackgroundOptions(virtualBackgroundOptions);
         }
         this.previewCameraEffects?.cancel();
-        applyCameraEffects();
+        await applyCameraEffects();
     }
 
     async requestPermissions() {
