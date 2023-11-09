@@ -9,13 +9,6 @@ export enum VirtualBackground {
     CUSTOM = "CUSTOM",
 }
 
-
-export enum OpenSettings {
-    MANUAL = "MANUAL",
-    EVERY_STARTUP = "EVERY_STARTUP",
-    EVERY_STARTUP_FORCED = "EVERY_STARTUP_FORCED",
-}
-
 export enum VoiceButton {
     STANDARD = "STANDARD",
     ENHANCED = "ENHANCED",
