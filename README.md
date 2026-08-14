@@ -6,12 +6,6 @@
 
 ## About
 
-Enhancements for the Audio/Video of Foundry VTT.
-
-![A/V Quality of Life Settings](/docs/AV-QualityOfLife.png)
-
-![Enhanced Voice Button](/docs/Enhanced-Voice-Button.jpg)
-
 ## Features
 
 AV/ Quality Of Life provides a number of features beyond the built-in Foundry options:
