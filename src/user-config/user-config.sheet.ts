@@ -167,6 +167,30 @@ export class AVQOLUserConfig extends CoreUserConfig {
         await this.checkVideoEffectAvailability(html);
     }
 
+    /**
+     * Tear down the live preview state when the sheet closes.
+     *
+     * The document caches and reuses this same sheet instance across opens,
+     * but every open renders a brand new DOM. `renderVideoPreviewEffects`
+     * skips rebuilding the virtual-background options fieldset whenever
+     * `this.previewCameraEffects.virtualBackground` already matches the
+     * selected one - a leftover from the *previous* time the sheet was
+     * open. Without clearing it here, reopening the sheet with the same
+     * virtual background silently reuses that stale flag against the fresh
+     * (empty) DOM: the options fieldset (e.g. the blur radius slider) never
+     * gets rebuilt, so applyEffect() ends up called with no options at all.
+     */
+    /** @inheritdoc */
+    _onClose(options: any): void {
+        super._onClose(options);
+        this.previewCameraEffects?.cancel();
+        this.previewCameraEffects = null;
+        this.disableHearMyself();
+        for (const animationFrameId of Object.keys(this.animationFrames)) {
+            this.resetAudioPids(animationFrameId);
+        }
+    }
+
     getVoiceModes() {
         const voiceModes = {
             [AVSettings.VOICE_MODES.ALWAYS]: (game as Game).i18n.localize(
