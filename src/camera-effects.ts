@@ -40,13 +40,26 @@ export const applyEffect = async (
     if (requestAnimationFrameId) {
         cancelAnimationFrame(requestAnimationFrameId);
     }
-    // Pinned to match the "@mediapipe/tasks-vision" version in package.json.
-    // This used to fetch "@latest" from the CDN, which silently drifted to a
-    // newer major release (1.0.1) with a WASM build that throws
-    // "'caller', 'callee', and 'arguments' properties may not be accessed on
-    // strict mode functions" during ImageSegmenter.createFromOptions -
-    // unrelated to Foundry's own version, just an unpinned CDN dependency.
+    // Pinned to match the "@mediapipe/tasks-vision" version in package.json,
+    // instead of trusting "@latest" on the CDN to stay compatible forever.
     // Bump this alongside the "@mediapipe/tasks-vision" devDependency.
+    //
+    // @mediapipe/tasks-vision's WASM glue code (vision_wasm_internal.js) is
+    // Emscripten-generated and follows the classic convention of a global
+    // `Module` object for runtime config, read via
+    // `typeof Module != 'undefined' ? Module : {}`. Foundry v13+ also
+    // defines a *deprecated* global `Module` (a getter/setter shim for
+    // `foundry.packages.Module`) for backwards compatibility. Before
+    // MediaPipe ever assigns to it, that first read resolves through
+    // Foundry's getter and returns Foundry's Module *class* (a function) -
+    // and MediaPipe's own error/stack-trace handling then throws trying to
+    // access `.arguments`/`.caller` on it, which is forbidden on strict-mode
+    // functions (ES classes always are strict). Priming the global to
+    // `undefined` first makes Foundry's compatibility getter short-circuit
+    // (it returns early for any key it already has an override for) so
+    // MediaPipe sees a plain `undefined` and sets up its own Module object
+    // instead of tripping over Foundry's class.
+    (globalThis as { Module?: unknown }).Module = undefined;
     const wasmFileset = await FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.7/wasm"
     );
