@@ -25,8 +25,18 @@ export const applyCameraEffects = async (): Promise<void> => {
     const webrtc = (game as Game).webrtc as AVMaster;
     const userSettings = webrtc.settings.getUser((game as Game).userId as string);
     if (virtualBackground === VirtualBackground.NONE || userSettings?.hidden) {
+        // Only re-render (and clear the stored effect) when there was
+        // actually something to remove. This runs on every renderCameraViews
+        // hook, so unconditionally calling ui.webrtc.render() here would
+        // re-trigger the same hook and spin forever whenever no virtual
+        // background is configured (the default state) - which is exactly
+        // when this branch is hit on every single render.
+        if (!avqol?.getCameraEffect()) {
+            return;
+        }
         debug("Removing camera effects");
-        avqol?.getCameraEffect()?.cancel();
+        avqol.getCameraEffect()?.cancel();
+        avqol.setCameraEffect(null);
         // @ts-ignore
         ui.webrtc.render();
         return;

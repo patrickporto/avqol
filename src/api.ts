@@ -51,7 +51,7 @@ export class AVQOL {
         return this.virtualBackgrounds[name]?.renderOptions ?? null;
     }
 
-    setCameraEffect(cameraEffect: CameraEffect) {
+    setCameraEffect(cameraEffect: CameraEffect | null) {
         this.cameraEffect = cameraEffect;
     }
 

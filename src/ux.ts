@@ -142,7 +142,7 @@ Hooks.once("renderHotbar", async (_: any, element: HTMLElement) => {
             async (onSettingsChanged: any, ...args: any) => {
                 await renderPushToTalkButton(html);
                 updatePushToTalkButtonBroadcasting(html);
-                return onSettingsChanged(args);
+                return onSettingsChanged(...args);
             },
             "WRAPPER"
         );
