@@ -40,8 +40,15 @@ export const applyEffect = async (
     if (requestAnimationFrameId) {
         cancelAnimationFrame(requestAnimationFrameId);
     }
+    // Pinned to match the "@mediapipe/tasks-vision" version in package.json.
+    // This used to fetch "@latest" from the CDN, which silently drifted to a
+    // newer major release (1.0.1) with a WASM build that throws
+    // "'caller', 'callee', and 'arguments' properties may not be accessed on
+    // strict mode functions" during ImageSegmenter.createFromOptions -
+    // unrelated to Foundry's own version, just an unpinned CDN dependency.
+    // Bump this alongside the "@mediapipe/tasks-vision" devDependency.
     const wasmFileset = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.7/wasm"
     );
 
     const imageSegmenter = await ImageSegmenter.createFromOptions(wasmFileset, {
