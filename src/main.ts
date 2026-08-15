@@ -13,13 +13,13 @@ import "./camera-view";
 import "./virtual-backgrounds";
 import "./ux";
 import { AVQOLUserConfig } from "./user-config/user-config.sheet.js";
-import { AVQOLCameraViews } from "./camera-views/camera-views.ui.js";
 
 Hooks.on("init", async () => {
     registerSettings();
-    CONFIG.ui.webrtc = AVQOLCameraViews;
 
-    DocumentSheetConfig.registerSheet(User, CANONICAL_NAME, AVQOLUserConfig, {
+    // @ts-ignore - the global `DocumentSheetConfig` still works but is
+    // deprecated as of v13, removed in v15.
+    foundry.applications.apps.DocumentSheetConfig.registerSheet(User, CANONICAL_NAME, AVQOLUserConfig, {
         label: "AVQOL.UserConfig",
         makeDefault: true,
     })

@@ -106,7 +106,11 @@ const updatePushToTalkButtonBroadcasting = (
     );
 };
 
-Hooks.once("renderHotbar", async (_: any, html: JQuery<HTMLElement>) => {
+// Foundry v13+ rebuilt Hotbar on ApplicationV2, which hands render hooks a
+// native HTMLElement instead of a jQuery object. Wrap it once here so the
+// rest of this file's jQuery-based DOM handling keeps working unchanged.
+Hooks.once("renderHotbar", async (_: any, element: HTMLElement) => {
+    const html = $(element);
     if (getVoiceButton() === VoiceButton.ENHANCED) {
         libWrapper.register(
             CANONICAL_NAME,

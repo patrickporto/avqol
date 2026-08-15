@@ -7,54 +7,103 @@ import { cameraEffectsIsSupported, getRTCClient, getRTCClientSettings, getRTCWor
 
 const DEFAULT_AVATAR = "icons/svg/mystery-man.svg";
 
-export class AVQOLUserConfig extends UserConfig {
+// Foundry v13+ rebuilt UserConfig on ApplicationV2/DocumentSheetV2. The
+// global `UserConfig` (Application v1) no longer exists as of v13.
+// @ts-ignore
+const CoreUserConfig = foundry.applications.sheets.UserConfig;
+
+export class AVQOLUserConfig extends CoreUserConfig {
     private previewCameraEffects: CameraEffect | null = null;
     private animationFrames: Record<string, number | null> = {};
     private hearMyselfAudio: HTMLAudioElement | null = null;
 
     /** @inheritdoc */
-    static get defaultOptions() {
-        return foundry.utils.mergeObject(super.defaultOptions, {
-            classes: ["sheet", "user-config", "avqol-user-config"],
-            template: `${TEMPLATE_PATH}/user-config.hbs`,
-            width: 600,
-            height: 'auto',
-            tabs: [{ navSelector: ".tabs", contentSelector: "form", initial: "general" }]
-        })
+    static DEFAULT_OPTIONS = {
+        classes: ["avqol-user-config"],
+        position: { width: 600 },
+        form: {
+            handler: AVQOLUserConfig.#onSubmit,
+            closeOnSubmit: true,
+        },
+    };
+
+    /**
+     * The "general" part reuses the core UserConfig template/context (avatar,
+     * color, pronouns, character) instead of duplicating it, so it keeps
+     * working the way the rest of Foundry expects and doesn't depend on the
+     * deprecated `colorPicker` handlebars helper.
+     */
+    /** @inheritdoc */
+    static PARTS = {
+        tabs: { template: "templates/generic/tab-navigation.hbs" },
+        general: { id: "general", template: `${TEMPLATE_PATH}/user-config-general.hbs`, scrollable: [""] },
+        video: { id: "video", template: `${TEMPLATE_PATH}/user-config-video.hbs`, scrollable: [""] },
+        audio: { id: "audio", template: `${TEMPLATE_PATH}/user-config-audio.hbs`, scrollable: [""] },
+        footer: { template: "templates/generic/form-footer.hbs" },
+    };
+
+    /** @inheritdoc */
+    static TABS = {
+        sheet: {
+            tabs: [
+                { id: "general", icon: "fas fa-user", label: "AVQOL.HeaderGeneral" },
+                { id: "audio", icon: "fas fa-headset", label: "AVQOL.HeaderAudio" },
+                { id: "video", icon: "fas fa-headset", label: "AVQOL.HeaderVideo" },
+            ],
+            initial: "general",
+        },
+    };
+
+    /* -------------------------------------------- */
+
+    /** @inheritdoc */
+    _configureRenderParts(options: any): Record<string, any> {
+        const parts = super._configureRenderParts(options);
+        const rtcWorldSettings = getRTCWorldSettings();
+        if (!this.hasAudioDep(rtcWorldSettings)) delete parts.audio;
+        if (!this.hasVideoDep(rtcWorldSettings)) delete parts.video;
+        return parts;
+    }
+
+    private hasAudioDep(rtcWorldSettings: { mode: any }): boolean {
+        return [
+            AVSettings.AV_MODES.AUDIO,
+            // @ts-ignore
+            AVSettings.AV_MODES.AUDIO_VIDEO,
+        ].includes(rtcWorldSettings.mode);
+    }
+
+    private hasVideoDep(rtcWorldSettings: { mode: any }): boolean {
+        return [
+            AVSettings.AV_MODES.VIDEO,
+            // @ts-ignore
+            AVSettings.AV_MODES.AUDIO_VIDEO,
+        ].includes(rtcWorldSettings.mode);
     }
 
     /* -------------------------------------------- */
 
     /** @inheritdoc */
-    get title(): string {
-        return `${game.i18n.localize("PLAYERS.ConfigTitle")}: ${this.object.name}`;
-    }
-
-    /* -------------------------------------------- */
-
-    /** @inheritdoc */
-    async getData(options = {}): Record<string, any> {
-        const data = super.getData(options);
+    async _prepareContext(options = {}): Promise<Record<string, any>> {
+        const context = await super._prepareContext(options);
         const microphoneStatus = await this.getMicrophoneStatus();
         const cameraStatus = await this.getCameraStatus();
         const rtcWorldSettings = getRTCWorldSettings();
         const avqol = getAVQOLAPI();
-        return {
-            ...data,
+        const audioDep = this.hasAudioDep(rtcWorldSettings);
+        const videoDep = this.hasVideoDep(rtcWorldSettings);
+        // Match _configureRenderParts: don't offer a tab for a part that
+        // isn't going to be rendered.
+        if (context.tabs) {
+            if (!audioDep) delete context.tabs.audio;
+            if (!videoDep) delete context.tabs.video;
+        }
+        return Object.assign(context, {
             avatar: (game as Game).user?.avatar ?? DEFAULT_AVATAR,
             microphoneStatus: microphoneStatus,
             cameraStatus: cameraStatus,
-            audioDep: [
-                AVSettings.AV_MODES.AUDIO,
-                AVSettings.AV_MODES.AUDIO_VIDEO,
-                // @ts-ignore
-            ].includes(rtcWorldSettings.mode),
-            // @ts-ignore
-            videoDep: [
-                AVSettings.AV_MODES.VIDEO,
-                AVSettings.AV_MODES.AUDIO_VIDEO,
-                // @ts-ignore
-            ].includes(rtcWorldSettings.mode),
+            audioDep,
+            videoDep,
             videoSrc: getRTCClientSettings().videoSrc,
             videoDevices: await this.getVideoSources(),
             audioSrc: getRTCClientSettings().audioSrc,
@@ -65,9 +114,58 @@ export class AVQOLUserConfig extends UserConfig {
             voiceModes: this.getVoiceModes(),
             virtualBackgrounds: avqol.getVirtualBackgrounds(),
             virtualBackground: getVirtualBackground(),
-        };
+        });
     }
 
+    /**
+     * Kept for the interactive preview helpers below, which pre-date the
+     * ApplicationV2 rewrite and just want a fresh copy of the render context
+     * on demand (e.g. to react to a device picker change without a full
+     * re-render).
+     */
+    private async getData(): Promise<Record<string, any>> {
+        return this._prepareContext();
+    }
+
+    /** @inheritdoc */
+    async _preparePartContext(partId: string, context: any, options: any): Promise<any> {
+        const partContext = await super._preparePartContext(partId, context, options);
+        if (context.tabs && partId in context.tabs) {
+            partContext.tab = context.tabs[partId];
+        }
+        return partContext;
+    }
+
+    /* -------------------------------------------- */
+
+    /** @inheritdoc */
+    async _onRender(context: any, options: any): Promise<void> {
+        await super._onRender(context, options);
+        await this.checkPermissions();
+
+        const html = $(this.element);
+
+        html.find("#virtualBackground")
+            .on("change", async () => {
+                await this.renderVideoPreviewEffects(html);
+            });
+        html.find("#videoSrc")
+            .on("change", async () => {
+                await this.checkVideoEffectAvailability(html);
+                await this.changeVideoPreviewSource(html);
+            });
+        await this.changeVideoPreviewSource(html);
+        html.find("#audioSrc")
+            .on("change", async () => {
+                await this.renderAudioSourcePreview(html);
+            });
+        html.find("#hearMyself")
+            .on("change", async () => {
+                await this.renderAudioSourcePreview(html);
+            });
+        await this.renderAudioSourcePreview(html);
+        await this.checkVideoEffectAvailability(html);
+    }
 
     getVoiceModes() {
         const voiceModes = {
@@ -149,36 +247,6 @@ export class AVQOLUserConfig extends UserConfig {
         return { ...sources, ...(await getRTCClient().getVideoSources()) };
     }
 
-    async activateListeners(html: JQuery<HTMLElement>) {
-        super.activateListeners(html);
-        await this.checkPermissions();
-
-        $(html)
-            .find("#virtualBackground")
-            .on("change", async () => {
-                await this.renderVideoPreviewEffects(html);
-            });
-        $(html)
-            .find("#videoSrc")
-            .on("change", async () => {
-                await this.checkVideoEffectAvailability(html);
-                await this.changeVideoPreviewSource(html);
-            });
-        await this.changeVideoPreviewSource(html);
-        $(html)
-            .find("#audioSrc")
-            .on("change", async () => {
-                await this.renderAudioSourcePreview(html);
-            });
-        $(html)
-            .find("#hearMyself")
-            .on("change", async () => {
-                await this.renderAudioSourcePreview(html);
-            });
-        await this.renderAudioSourcePreview(html);
-        await this.checkVideoEffectAvailability(html);
-    }
-
     private async getCameraStatus() {
         try {
             const status = await navigator.permissions.query({
@@ -234,8 +302,20 @@ export class AVQOLUserConfig extends UserConfig {
         }
     }
 
-    async _updateObject(event: Event, formData: any) {
-        debug("Updating RTC Client settings", formData);
+    /**
+     * Form submission handler.
+     *
+     * The form mixes two unrelated concerns: AVQOL's own client-side RTC/
+     * virtual-background settings (which are never part of the User document
+     * and are persisted through world/client settings), and the regular User
+     * document fields rendered by the "general" tab (avatar, color,
+     * pronouns, character) which the core UserConfig sheet knows how to
+     * persist. We handle the former ourselves and delegate the latter to
+     * `this.document.update()`.
+     */
+    static async #onSubmit(this: AVQOLUserConfig, _event: Event, _form: HTMLFormElement, formData: any) {
+        const data = formData.object as Record<string, any>;
+        debug("Updating RTC Client settings", data);
         this.disableHearMyself();
         const avqol = getAVQOLAPI();
         if (!avqol.allowPlay) {
@@ -244,20 +324,32 @@ export class AVQOLUserConfig extends UserConfig {
             (game as Game).webrtc.connect();
         }
         await setRTCClientSettings({
-            videoSrc: formData.videoSrc,
-            audioSrc: formData.audioSrc,
-            audioSink: formData.audioSink,
+            videoSrc: data.videoSrc,
+            audioSrc: data.audioSrc,
+            audioSink: data.audioSink,
             voice: {
-                mode: formData.voiceMode,
+                mode: data.voiceMode,
             },
         });
-        if (formData.videoSrc === "disabled") {
+
+        const documentData: Record<string, any> = {};
+        for (const [key, value] of Object.entries(data)) {
+            if (["videoSrc", "audioSrc", "audioSink", "voiceMode", "virtualBackground"].includes(key)) {
+                continue;
+            }
+            if (key.startsWith("virtualBackgroundOptions")) {
+                continue;
+            }
+            documentData[key] = value;
+        }
+
+        if (data.videoSrc === "disabled") {
             await setVirtualBackground(VirtualBackground.NONE);
             await setVirtualBackgroundOptions({});
         } else {
-            await setVirtualBackground(formData.virtualBackground);
+            await setVirtualBackground(data.virtualBackground);
             let virtualBackgroundOptions: Record<string, any> = {};
-            for (const [key, value] of Object.entries(formData)) {
+            for (const [key, value] of Object.entries(data)) {
                 if (key.startsWith("virtualBackgroundOptions")) {
                     virtualBackgroundOptions[
                         key.replace(/^virtualBackgroundOptions\./, "")
@@ -268,6 +360,10 @@ export class AVQOLUserConfig extends UserConfig {
         }
         this.previewCameraEffects?.cancel();
         await applyCameraEffects();
+
+        if (Object.keys(documentData).length) {
+            await this.document.update(foundry.utils.expandObject(documentData));
+        }
     }
 
     async requestPermissions() {
