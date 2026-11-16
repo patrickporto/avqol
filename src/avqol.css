@@ -209,7 +209,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 42px;
+    /* Foundry v13+: #ui-bottom is a centered flex column, so the button is
+       taken out of the flow and anchored to the right edge of the hotbar. */
+    position: absolute;
+    position-anchor: --avqol-hotbar;
+    left: calc(anchor(right) + 16px);
+    top: anchor(center);
+    transform: translateY(-50%);
+    margin: 0;
     cursor: pointer;
     pointer-events: all;
     transition: all 0.2s ease-in;
@@ -222,13 +229,14 @@
     transition: all 0.2s ease-out;
 }
 
-#ui-bottom > div.avqol-pushtotalk__container {
-    justify-content: flex-start
+#hotbar {
+    anchor-name: --avqol-hotbar;
 }
 
-.avqol-pushtotalk__container #fps {
-    justify-self: flex-end;
-    margin-left: auto;
+/* Anchors ignore transforms, so mirror the shift core applies to a
+   minimized hotbar. */
+#hotbar.min + .avqol-pushtotalk {
+    transform: translate(-70px, -50%);
 }
 
 .avqol-pushtotalk--speaking,
