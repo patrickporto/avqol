@@ -3,7 +3,49 @@ import { libWrapper } from "./third-party/libwrapper-shim.js";
 import { CANONICAL_NAME, TEMPLATE_PATH, VoiceButton } from "./constants";
 import { debug } from "./debug";
 
+// Settings that hide core camera controls. Each one toggles a class on
+// <body>, and the stylesheet hides the matching buttons - so it keeps
+// working across camera re-renders and pop-outs without touching the DOM
+// that core owns.
+const CAMERA_CONTROL_SETTINGS: Record<string, { cssClass: string; label: string; default: boolean }> = {
+    disableHideUser: {
+        cssClass: "avqol-disable-hide-user",
+        label: "AVQOL.UserExperienceDisableHideUser",
+        default: true,
+    },
+    disablePopout: {
+        cssClass: "avqol-disable-popout",
+        label: "AVQOL.UserExperienceDisablePopout",
+        default: true,
+    },
+    disableBlockUserAV: {
+        cssClass: "avqol-disable-block-user-av",
+        label: "AVQOL.UserExperienceDisableBlockUserAV",
+        default: false,
+    },
+};
+
+const updateCameraControlClasses = () => {
+    for (const [key, { cssClass }] of Object.entries(CAMERA_CONTROL_SETTINGS)) {
+        const disabled = (game as Game).settings.get(CANONICAL_NAME, key) as boolean;
+        document.body.classList.toggle(cssClass, disabled);
+    }
+};
+
+Hooks.once("ready", updateCameraControlClasses);
+
 export const registerSettings = () => {
+    for (const [key, config] of Object.entries(CAMERA_CONTROL_SETTINGS)) {
+        (game as Game).settings.register(CANONICAL_NAME, key, {
+            name: config.label,
+            hint: `${config.label}Hint`,
+            scope: "world",
+            config: true,
+            default: config.default,
+            type: Boolean,
+            onChange: updateCameraControlClasses,
+        });
+    }
     (game as Game).settings.register(CANONICAL_NAME, "voiceButton", {
         name: (game as Game).i18n.localize("AVQOL.UserExperienceVoiceButton"),
         hint: (game as Game).i18n.localize(

@@ -186,8 +186,13 @@
     backdrop-filter: blur(6px);
 }
 
-.avqol-control--disabled {
-    display: none!important;
+body.avqol-disable-hide-user .camera-view .av-control[data-action="hide"],
+body.avqol-disable-block-user-av .camera-view .av-control[data-action="blockVideo"],
+body.avqol-disable-block-user-av .camera-view .av-control[data-action="blockAudio"],
+/* Only in the dock: a camera that is already popped out keeps the button,
+   otherwise it could never be docked back. */
+body.avqol-disable-popout #camera-views .camera-view .av-control[data-action="toggleDocked"] {
+    display: none !important;
 }
 
 .avqol-virtual-background-options:empty {
