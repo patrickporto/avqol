@@ -28,10 +28,10 @@
   "styles": [
     "avqol.css"
   ],
-  "url": "https://github.com/patrickporto/avqol",
-  "manifest": "https://github.com/patrickporto/avqol/releases/download/11.1.0/module.json",
-  "download": "https://github.com/patrickporto/avqol/releases/download/11.1.0/avqol.zip",
-  "readme": "https://github.com/patrickporto/avqol/blob/main/README.md",
-  "changelog": "https://github.com/patrickporto/avqol/releases",
-  "bugs": "https://github.com/patrickporto/avqol/issues"
+  "url": "https://github.com/joelsonejr/avqol-migrate-to-foundry-v14",
+  "manifest": "https://github.com/joelsonejr/avqol-migrate-to-foundry-v14/releases/download/11.1.0/module.json",
+  "download": "https://github.com/joelsonejr/avqol-migrate-to-foundry-v14/releases/download/11.1.0/avqol.zip",
+  "readme": "https://github.com/joelsonejr/avqol-migrate-to-foundry-v14/blob/main/README.md",
+  "changelog": "https://github.com/joelsonejr/avqol-migrate-to-foundry-v14/releases",
+  "bugs": "https://github.com/joelsonejr/avqol-migrate-to-foundry-v14/issues"
 }

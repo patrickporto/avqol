@@ -9,8 +9,8 @@
         "dev": "vite dev",
         "postversion": "npm run postversion:update-module-version && npm run postversion:update-module-manifest && npm run postversion:update-module-download",
         "postversion:update-module-version": "jq '.version = \"'${npm_package_version}'\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json",
-        "postversion:update-module-manifest": "jq '.manifest = \"https://github.com/patrickporto/avqol/releases/download/'${npm_package_version}'/module.json\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json",
-        "postversion:update-module-download": "jq '.download = \"https://github.com/patrickporto/avqol/releases/download/'${npm_package_version}'/avqol.zip\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json",
+        "postversion:update-module-manifest": "jq '.manifest = \"https://github.com/joelsonejr/avqol-migrate-to-foundry-v14/releases/download/'${npm_package_version}'/module.json\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json",
+        "postversion:update-module-download": "jq '.download = \"https://github.com/joelsonejr/avqol-migrate-to-foundry-v14/releases/download/'${npm_package_version}'/avqol.zip\"' ./public/module.json > ./public/module.json.tmp && mv ./public/module.json.tmp ./public/module.json",
         "format": "prettier --write \"src/**/*.{ts,js,json,css,md}\"",
         "format:check": "prettier --check \"src/**/*.{ts,js,json,css,md}\"",
         "lint": "eslint -c .eslintrc.cjs .",
@@ -21,7 +21,7 @@
     "config": {},
     "repository": {
         "type": "git",
-        "url": "https://github.com/patrickporto/avqol"
+        "url": "https://github.com/joelsonejr/avqol-migrate-to-foundry-v14"
     },
     "devDependencies": {
         "@foundryvtt/foundryvtt-cli": "^0.0.6",
