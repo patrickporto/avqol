@@ -11,14 +11,37 @@ import {
 } from "./rtcsettings";
 import { getAVQOLAPI } from "./api";
 
-export const applyCameraEffects = async (): Promise<void> => {
+let latestApplyRequest = 0;
+let applyQueue: Promise<void> = Promise.resolve();
+
+/**
+ * (Re-)apply the configured virtual background to the local camera.
+ *
+ * Requests are serialised: this is triggered by every camera dock render
+ * and by the config sheet, often several times in a row, and overlapping
+ * runs would race each other to replace the outgoing video track. Runs that
+ * have already been superseded by a newer request are skipped.
+ */
+export const applyCameraEffects = (): Promise<void> => {
+    const request = ++latestApplyRequest;
+    const run = async () => {
+        if (request !== latestApplyRequest) {
+            return;
+        }
+        await doApplyCameraEffects();
+    };
+    applyQueue = applyQueue.then(run, run);
+    return applyQueue;
+};
+
+const doApplyCameraEffects = async (): Promise<void> => {
     const avqol = getAVQOLAPI();
     const cameraView = $(`.camera-view[data-user="${(game as Game).userId}"]`);
     if (!cameraView.length) {
         return;
     }
-    const video = cameraView.find(".user-camera");
-    if (!video) {
+    const video = cameraView.find("video.user-camera");
+    if (!video.length) {
         return;
     }
     const virtualBackground = getVirtualBackground();
@@ -51,8 +74,9 @@ export const applyCameraEffects = async (): Promise<void> => {
     )[0] as HTMLCanvasElement;
     if (!canvas) {
         canvas = document.createElement("canvas");
-        canvas.width = video.width();
-        canvas.height = video.height();
+        const videoElement = video[0] as HTMLVideoElement;
+        canvas.width = video.width() || videoElement.videoWidth || 320;
+        canvas.height = video.height() || videoElement.videoHeight || 240;
         canvas.classList.add("avqol-video-effect__canvas");
         video.after(canvas);
     }
@@ -61,6 +85,10 @@ export const applyCameraEffects = async (): Promise<void> => {
         virtualBackground,
         virtualBackgroundOptions
     );
+    // The previous effect drew to a canvas that may no longer exist; stop its
+    // loop before starting the new one.
+    avqol.getCameraEffect()?.cancel();
+    avqol.setCameraEffect(null);
     const cameraEffect = await applyEffect(
         canvas,
         video[0] as HTMLVideoElement,
@@ -76,6 +104,10 @@ export const applyCameraEffects = async (): Promise<void> => {
 Hooks.on("renderCameraViews", async () => {
     const avqol = getAVQOLAPI();
     if (avqol?.allowPlay) {
-        await applyCameraEffects();
+        try {
+            await applyCameraEffects();
+        } catch (error) {
+            console.error("A/V Quality of Life | Failed to apply camera effects", error);
+        }
     }
 });
